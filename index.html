@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  <!-- for mobile -->
+    <title>MovieBuddy</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <h1 class="logo">MovieBuddy</h1>
+        <div class="search-box">
+            <input type="text" id="searchinput" placeholder="Search for a movie...">
+            <button id="searchbutton">Search</button>
+        </div>
+        <div class="nav-links">
+            <a href="#" id="home-link">Home</a>
+            <a href="#">Watchlist</a>
+        </div>
+    </nav>
+
+    <main>
+        <section class="movie-row" id="search-section" style="display: none;">
+            <h2 id="search-heading">Search Results</h2>
+            <div class="search-grid" id="search-results"></div>
+        </section>
+
+        <div id="home-content">
+            <!-- bigScreen: -->
+            <header id="hero-banner" class="hero">
+                <div id="hero-video-container"></div>
+
+                <div class="hero-content">
+                    <h1 id="hero-title">Movie Title</h1>
+                    <p id="hero-description">Movie description</p>
+                    <div class="hero-buttons">
+                        <button class="btn play-btn">▶ Play</button>
+                        <button class="btn info-btn">ⓘ More Info</button>
+                    </div>
+                </div>
+
+                <!-- <div class="hero-fade-bottom"></div> -->
+            </header>
+
+            <section class="movie-row">
+                <h2>What's Trending</h2>
+                <div class="slider-container" id="trending-slider"></div>
+            </section>
+        
+            <section class="movie-row">
+                <h2>Latest Releases</h2>
+                <div class="slider-container" id="latest-slider"></div>
+            </section>
+
+            <section class="movie-row">
+                <h2>Popular TV Shows</h2>
+                <div class="slider-container" id="Popular-slider"></div>
+            </section>
+
+            <section class="movie-row">
+                <h2>In Cinemas</h2>
+                <div class="slider-container" id="cinemas-slider"></div>
+            </section>
+
+            <section class="movie-row">
+                <h2>Top Rated</h2>
+                <div class="slider-container" id="top-rated-slider"></div>
+            </section>
+        </div>
+        
+        
+    </main>
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

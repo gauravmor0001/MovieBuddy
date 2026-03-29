@@ -1,0 +1,253 @@
+/* Reset basic margins and set the dark theme */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #141414; /* Classic Netflix dark gray */
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+}
+
+/* Navbar Styling */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background-color: #000000;
+}
+
+.navbar .logo {
+    color: #e50914; /* A nice red accent color */
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;
+}
+
+/* Movie Row Styling */
+.movie-row {
+    margin: 30px 0 30px 40px;
+}
+
+.movie-row h2 {
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+/* The Magic Horizontal Slider */
+.slider-container {
+    display: flex; /* Lines items up in a row */
+    gap: 15px; /* Space between posters */
+    overflow-x: auto; /* Allows horizontal scrolling if content is too wide */
+    padding-bottom: 15px;
+}
+
+/* Hide the ugly scrollbar for a cleaner look */
+.slider-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* Placeholder styling for the posters our JS will add */
+/* --- Phase 1: Upgraded Movie Cards --- */
+
+/* The Card Wrapper */
+.movie-card {
+    position: relative; /* Crucial: This anchors the text overlay to the card */
+    min-width: 250px;
+    border-radius: 8px;
+    overflow: hidden; /* Keeps the dark text background inside the rounded corners */
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+/* Make the whole card pop out when hovered */
+.movie-card:hover {
+    transform: scale(1.05);
+}
+
+.movie-poster {
+    width: 100%;
+    display: block;
+}
+
+/* The Text Overlay */
+.movie-info {
+    position: absolute; /* Takes the text out of normal flow and floats it */
+    bottom: 0; /* Pins it to the bottom of the card */
+    left: 0;
+    width: 100%;
+    padding: 20px 10px 10px;
+    
+    /* Creates a dark fade effect at the bottom so white text is readable! */
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+    
+    color: white;
+    font-size: 0.95rem;
+    font-weight: bold;
+    text-align: center;
+    /* Optional: Prevents long titles from breaking into multiple lines */
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-box{
+    display:flex;
+    gap:10px;
+}
+#searchinput {
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: none;
+    outline: none;
+    background-color: #333;
+    color: white;
+    width: 250px;
+}
+#searchbutton {
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: none;
+    background-color: #e50914; /* Netflix Red */
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+#searchbutton:hover {
+    background-color: #f40612;
+}
+
+.search-grid {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 15px;
+    padding-bottom: 20px;
+}
+.hero{
+    height:70vh; /* Takes up 70% of the screen height */
+    background-position: center top;
+    background-size: cover;
+    position: relative;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: none;        /* ← Add this */
+    outline: none;
+}
+.hero-content {
+    margin-left: 40px;
+    max-width: 600px;
+    z-index: 2; /* Keeps text above the background */
+}
+#hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.6); /* Helps text stand out */
+}
+
+#hero-description {
+    font-size: 1.1rem;
+    line-height: 1.4;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+    /* Cuts off description if it's way too long */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.hero-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.btn {
+    padding: 10px 25px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.play-btn {
+    background-color: white;
+    color: black;
+}
+
+.play-btn:hover {
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.info-btn {
+    background-color: rgba(109, 109, 110, 0.7);
+    color: white;
+}
+
+.info-btn:hover {
+    background-color: rgba(109, 109, 110, 0.4);
+}
+.hero-fade-bottom {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 150px;
+    background: linear-gradient(180deg, transparent, rgba(20, 20, 20, 1));
+}
+
+/* --- Phase 3.5: Hero Video Background --- */
+
+#hero-video-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Hides the edges of the oversized video */
+    z-index: 0; /* Keeps it in the very back */
+}
+
+/* We also need to add a dark tint so white text is readable over bright explosions! */
+#hero-video-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* 50% black tint */
+}
+
+#hero-video-container iframe {
+    display: block;
+    border: none;
+    width: 100vw;
+    height: 56.25vw; /* Forces a perfect 16:9 aspect ratio */
+    min-height: 100vh;
+    min-width: 177.77vh;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1.3);
+    pointer-events: none; 
+}
+
+/* Make sure our text and fade sit ABOVE the video (z-index: 2) */
+.hero-content, .hero-fade-bottom {
+    position: relative;
+    z-index: 2; 
+}
+
+.movie-card-link {
+    text-decoration: none; 
+    color: inherit; 
+    display: block; /* Ensures the link wraps the entire card properly */
+}
