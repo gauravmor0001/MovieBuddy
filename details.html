@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Movie Details</title>
+
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="details-style.css">
+    </head>
+    <body>
+        <nav class="navbar">
+            <h1 class="logo">MovieBuddy</h1>
+            <div class="search-box">
+                <input type="text" id="searchinput" placeholder="Search for a movie...">
+                <button id="searchbutton">Search</button>
+            </div>
+            <div class="nav-links">
+                <a href="#" id="home-link">Home</a>
+                <a href="#">Watchlist</a>
+            </div>
+        </nav>
+
+        <main class="details-main">
+            <div class="title-other">
+                <div class="title-d">
+                    <h1 class="page-title" id="page-title">Title</h1>
+                </div>
+                <div class="other-d">
+                    <p class="detail-info" id="detail-info">detail</p>
+                </div>
+            </div>
+            
+            
+
+            <div class="media-showcase">
+                <div class="poster-side">
+                    <img id="details-poster" src="" alt="Movie Poster">
+                </div>
+                <div class="trailer-side" id="trailer-container">
+                    <p style="color: gray;">Trailer will load here in Step 2...</p>
+                </div>
+            </div>
+
+            <div class="details-lower-section">
+                <div class="description-action-row"> 
+                    <div class="description-box" id="description-style">
+                        <p id="movie-description">Loading description...</p>
+                    </div>
+                    <div class="watchlist-action-box">
+                        <button class="simple-watchlist-btn" id="watchlist-btn">
+                            + Add to Watchlist
+                        </button>
+                    </div>
+                </div>
+                <div class="info-panels-row">
+                    <div class="info-panel watch-panel">
+                        <h3>Where to Watch</h3>
+                        <div id="watch-providers" class="providers-container">
+                            <p class="loading-text">Loading providers...</p>
+                            <!-- Provider logos will be injected here by JS -->
+                        </div>
+                    </div>
+
+                    <div class="info-panel ratings-panel">
+                        <h3>Ratings</h3>
+                        <div class="ratings-container">
+                            
+                            <div class="rating-badge">
+                                <span class="provider-name">TMDB</span>
+                                <div class="score-display">
+                                    <span class="star">⭐</span>
+                                    <span id="tmdb-score" class="score-number">--</span>
+                                    <span class="score-max">/10</span>
+                                </div>
+                                <span id="tmdb-count" class="vote-count">-- votes</span>
+                            </div>
+
+                            <div class="rating-badge">
+                                <span class="provider-name">Tomatometer</span>
+                                <div class="score-display">
+                                    <span class="tomato">🍅</span>
+                                    <span id="rt-score" class="score-number">--</span>
+                                </div>
+                                <span class="vote-count">Critic Score</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                
+            </div>
+            <section class="cast-section">
+                <div class="section-header">
+                    <span class="yellow-bar"></span>
+                    <h2>Top Cast</h2>
+                </div>
+                <div class="cast-grid" id="cast-container">
+                    <p class="loading-text">Loading cast...</p>
+                    <!-- JS will inject the actors here -->
+                </div>
+
+            </section>
+        </main>
+    </body>
+    <script src="config.js"></script>
+    <script src="details.js"></script>
+</html>

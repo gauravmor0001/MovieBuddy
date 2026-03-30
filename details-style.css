@@ -1,0 +1,285 @@
+.details-main{
+    padding: 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+.page-title {
+    font-size: 2.5rem;
+    margin: 0;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+}
+.media-showcase {
+    display: flex;
+    gap: 20px; 
+    height: 60vh; /* Locks the height so the poster and video are perfectly even */
+}
+.poster-side {
+    flex: 0 0 300px; /* Forces the poster to stay exactly 300px wide and never shrink */
+}
+.poster-side img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Prevents the image from squishing */
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+.trailer-side {
+    flex: 1; /* Tells the video box to take up all remaining available space */
+    background-color: #111; /* Dark placeholder background */
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #333;
+}
+
+.description-box {
+    flex: 1; /* Tells the description to take up all available leftover space */
+    font-size: 1.15rem;
+    line-height: 1.6;
+    color: #cccccc;
+}
+.watchlist-action-box {
+    flex: 0 0 auto; /* Tells the button box to stay exactly its natural size */
+}
+.simple-watchlist-btn {
+    background-color: #222222; /* Dark base color */
+    color: white;
+    border: 2px solid #e50914; /* MovieBuddy Red Border */
+    border-radius: 8px; /* Clean, slightly rounded corners */
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.simple-watchlist-btn:hover {
+    background-color: #e50914; /* Fills in with red when hovered */
+    transform: scale(1.05); /* Slight pop-out effect */
+}
+
+.title-other{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 20px; 
+}
+.detail-info {
+    font-size: 1.2rem;
+    color: #cccccc; /* Nice light gray */
+    font-weight: 600;
+    margin: 0;
+}
+.description-action-row {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    margin-top: 30px;
+    margin-bottom: 25px; /* Adds space before the panels row */
+}
+#description-style {
+    flex: 1;
+    background-color: #262626;
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid #333;
+    line-height: 1.6;
+    color: #e0e0e0;
+}
+.watchlist-action-box {
+    flex: 0 0 auto;
+    margin-top: 15px; /* Aligns button with inner text of description */
+}
+.info-panels-row {
+    display: flex;
+    gap: 25px; /* Space between the two boxes */
+}
+.info-panel {
+    flex: 1; /* This forces BOTH boxes to take up exactly 50% of the space */
+    background-color: #262626; 
+    border-radius: 12px;
+    padding: 25px;
+    border: 1px solid #333;
+}
+
+/* The Panel Headings */
+.info-panel h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    color: #e50914; /* MovieBuddy Red to make it pop */
+    border-bottom: 1px solid #444; /* A nice subtle divider line */
+    padding-bottom: 10px;
+}
+.ratings-container {
+    display: flex;
+    gap: 15px; /* Space between TMDB and Tomatometer */
+}
+
+/* The dark inner cards for each rating */
+.rating-badge {
+    background-color: #1a1a1a; /* Even darker to inset the score */
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers the text inside the badge */
+    flex: 1;
+}
+.provider-name {
+    font-size: 0.8rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.score-display {
+    font-size: 1.8rem;
+    font-weight: bold;
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+}
+
+.score-max {
+    font-size: 0.9rem;
+    color: #888;
+    font-weight: normal;
+}
+
+.vote-count {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Placeholder text styling */
+.loading-text {
+    color: #888;
+    font-style: italic;
+}
+/* Container for the whole bottom section */
+.details-lower-section {
+    display: block; /* We changed this from flex to block so the rows stack vertically! */
+    margin-top: 30px;
+}
+
+/* --- ROW 1: Description & Watchlist Button --- */
+.description-action-row {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    margin-bottom: 25px; /* Adds space before the panels row */
+}
+
+#description-style {
+    flex: 1;
+    background-color: #262626;
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid #333;
+    line-height: 1.6;
+    color: #e0e0e0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+}
+
+.watchlist-action-box {
+    flex: 0 0 auto;
+    margin-top: 15px; /* Aligns button with inner text of description */
+}
+/* --- Watch Provider Logos --- */
+.providers-container {
+    display: flex;
+    flex-wrap: wrap; /* Wraps to the next line if there are many providers */
+    gap: 15px;
+}
+
+.provider-logo {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px; /* Makes them look like modern app icons */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    transition: transform 0.2s ease;
+    cursor: pointer;
+}
+
+.provider-logo:hover {
+    transform: scale(1.1); /* Nice little pop effect on hover */
+}
+/* --- Cast Section --- */
+.cast-section {
+    margin-top: 50px;
+    padding-bottom: 50px;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+/* Recreating that cool IMDb yellow vertical bar */
+.yellow-bar {
+    width: 4px;
+    height: 28px;
+    background-color: #5a18f5; 
+    border-radius: 2px;
+}
+
+.section-header h2 {
+    font-size: 1.8rem;
+    margin: 0;
+    color: white;
+}
+
+/* The Magic 3-Column Grid */
+.cast-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Exactly 3 equal columns */
+    gap: 25px 20px; /* 25px vertical gap, 20px horizontal gap */
+}
+
+/* Individual Actor Card */
+.cast-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background-color: transparent;
+    border-radius: 8px;
+    padding: 5px;
+    transition: background-color 0.2s;
+}
+
+.cast-card:hover {
+    background-color: #262626; /* Slight highlight when hovering over an actor */
+}
+
+/* Circular Actor Photo */
+.cast-photo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #333;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+/* Text Alignment */
+.cast-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.actor-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #ffffff;
+    margin-bottom: 4px;
+}
+
+.character-name {
+    font-size: 0.95rem;
+    color: #999999;
+}
