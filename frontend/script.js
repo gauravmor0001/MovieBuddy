@@ -108,9 +108,13 @@ async function searchMovies(query) {
         
         data.results.forEach(movie => {
             if (movie.poster_path) {
+                const link = document.createElement('a');
+                link.href = `details.html?type=movie&id=${movie.id}`;
+
                 const img = document.createElement('img');
                 img.src = `${IMAGE_BASE_URL}${movie.poster_path}`;
                 img.classList.add('movie-poster');
+                link.appendChild(img);
                 searchResultsContainer.appendChild(img);
             }
         });

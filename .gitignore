@@ -1,1 +1,8 @@
-config.js
+# Ignore Python cache folders
+__pycache__/
+*.pyc
+
+
+backend/.env
+
+frontend/config.js
