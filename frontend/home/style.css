@@ -254,3 +254,55 @@ body {
 
 
 
+/* Container for the grid */
+#search-results-container {
+    display: grid;
+    /* This automatically makes as many columns as will fit, matching the screenshot */
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+    gap: 16px;
+    padding: 20px 0;
+}
+
+/* The actual movie card */
+.search-card {
+    background-color: #1a1a1a; /* Dark grey fallback background */
+    border-radius: 6px;
+    overflow: hidden;
+    height: 140px; /* Forces all boxes to be the exact same height */
+    display: flex;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.search-card:hover {
+    transform: scale(1.05);
+    filter: brightness(1.2);
+}
+
+/* If there is an image, make it cover the whole card */
+.search-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Prevents the image from stretching weirdly */
+}
+
+/* If there is NO image, style the text exactly like the screenshot */
+.search-card-fallback {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+}
+
+.search-card-fallback h3 {
+    color: #ffffff;
+    font-size: 1rem;
+    margin: 0 0 8px 0;
+    font-weight: bold;
+}
+
+.search-card-fallback p {
+    color: #a3a3a3;
+    font-size: 0.85rem;
+    margin: 0;
+}

@@ -145,3 +145,87 @@ if (mediaId && mediaType) {
 } else {
     document.getElementById('details-title').innerText = "Movie not found!";
 }
+
+// search code:
+
+const searchInput = document.getElementById('search-input');
+const searchBtn = document.getElementById('search-btn');
+
+
+async function searchMedia(query) {
+    try{
+        const url = `${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`;
+        
+        const response = await fetch(url);
+        const data = await response.json();
+
+        searchSection.style.display = 'block';
+        searchHeading.innerText = `Search Results for "${query}"`;
+        searchResultsContainer.innerHTML = '';
+        
+        data.results.forEach(item => {
+            // Multi-search also returns actors. Let's skip people for now.
+            if (item.media_type === 'person') return;
+
+            // 2. Handle TMDB's naming quirks (Movies use title, TV uses name)
+            const title = item.title || item.name;
+            const releaseDate = item.release_date || item.first_air_date;
+            // Extract just the year (e.g., "2015-04-10" becomes "2015")
+            const year = releaseDate ? releaseDate.split('-')[0] : 'Unknown';
+
+            const link = document.createElement('a');
+            link.href = `/frontend/Movie_details/details.html?type=${encodeURIComponent(item.media_type)}&id=${encodeURIComponent(item.id)}`;
+            link.style.textDecoration = 'none'; // Prevent links from turning text blue
+
+            const card = document.createElement('div');
+            card.classList.add('search-card');
+
+            // 3. The Visual Logic: Poster vs. Text Fallback
+            if (item.poster_path || item.backdrop_path) {
+                // If they have an image, show the image
+                const imagePath = item.backdrop_path ? item.backdrop_path : item.poster_path;
+                const img = document.createElement('img');
+                img.src = `${IMAGE_BASE_URL}${imagePath}`;
+                img.alt = title;
+                card.appendChild(img);
+            } else {
+                // If NO image, create the dark box with text like your screenshot
+                const infoDiv = document.createElement('div');
+                infoDiv.classList.add('search-card-fallback');
+                infoDiv.innerHTML = `
+                    <h3>${title}</h3>
+                    <p>${year}</p>
+                `;
+                card.appendChild(infoDiv);
+            }
+
+            link.appendChild(card);
+            searchResultsContainer.appendChild(link);
+        });
+        
+    } catch (error) {
+        console.error('Error searching:', error);
+    }
+}
+
+searchbutton.addEventListener('click', () => {
+    const searchTerm = searchinput.value;
+    if (searchTerm) {
+        searchMedia(searchTerm);
+        searchinput.value="";
+    }
+});
+
+searchinput.addEventListener('keypress', (event) => {
+    if (event.key === 'Enter') {
+        const searchTerm = searchinput.value;
+        if (searchTerm) {
+            searchMedia(searchTerm);
+            searchinput.value="";
+        }
+    }
+});
+
+const searchSection = document.getElementById('search-section');
+const searchResultsContainer = document.getElementById('search-results');
+const searchHeading = document.getElementById('search-heading');

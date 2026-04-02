@@ -8,17 +8,33 @@
 </head>
 <body>
 
-    <nav class="navbar">
-        <h1 class="logo">MovieBuddy</h1>
+    <!-- <nav class="navbar">
+        <h1 class="logo"><a href="/frontend/home/index.html" style="color:red; text-decoration:none;">MovieBuddy</a></h1>
         <div class="search-box">
-            <input type="text" id="searchinput" placeholder="Search for a movie...">
+            <input type="text" id="searchinput" placeholder="Search movies & shows...">
             <button id="searchbutton">Search</button>
         </div>
         <div class="nav-links">
             <a href="#" id="home-link">Home</a>
             <a href="#">Watchlist</a>
         </div>
+    </nav> -->
+
+    <nav class="navbar">
+        <h1 class="logo"><a href="/frontend/home/index.html" style="color:red; text-decoration:none;">MovieBuddy</a></h1>
+        
+        <div class="search-box">
+            <input type="text" id="searchinput" placeholder="Search movies & shows...">
+            <button id="searchbutton">Search</button>
+        </div>
+        
+        <div class="nav-links">
+            <a href="/frontend/home/index.html" id="home-link">Home</a>
+            <a href="/frontend/watchlist/watchlist.html">Watchlist</a>
+            <a href="/frontend/login_page/auth.html" id="nav-auth-btn" class="sign-in-btn">Sign In</a> 
+        </div>
     </nav>
+
 
     <main>
         <section class="movie-row" id="search-section" style="display: none;">
