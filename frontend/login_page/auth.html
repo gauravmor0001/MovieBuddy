@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieBuddy - Sign In</title>
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body class="auth-body">
+
+    <div class="auth-container">
+        <div id="login-section" class="auth-box">
+            <h2>Sign In</h2>
+            <form id="login-form">
+                <input type="email" id="login-email" placeholder="Email Address" required>
+                <input type="password" id="login-password" placeholder="Password" required>
+                <button type="submit" class="auth-submit">Sign In</button>
+            </form>
+            <p class="auth-switch">New to MovieBuddy? <span id="show-register">Sign up now.</span></p>
+            <p id="login-error" class="error-msg"></p>
+        </div>
+
+        <div id="register-section" class="auth-box" style="display: none;">
+            <h2>Sign Up</h2>
+            <form id="register-form">
+                <input type="text" id="reg-username" placeholder="Username" required>
+                <input type="email" id="reg-email" placeholder="Email Address" required>
+                <input type="password" id="reg-password" placeholder="Password" required>
+                <button type="submit" class="auth-submit">Sign Up</button>
+            </form>
+            <p class="auth-switch">Already have an account? <span id="show-login">Sign in.</span></p>
+            <p id="reg-error" class="error-msg"></p>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+</body>
+</html>

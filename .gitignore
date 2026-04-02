@@ -5,4 +5,4 @@ __pycache__/
 
 backend/.env
 
-frontend/config.js
+frontend/home/config.js

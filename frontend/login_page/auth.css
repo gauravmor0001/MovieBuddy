@@ -1,0 +1,91 @@
+/* =========================================
+   --- AUTHENTICATION PAGE STYLING ---
+   ========================================= */
+
+.auth-body {
+    /* Optional: A dark gradient or a faded movie poster background */
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://image.tmdb.org/t/p/original/wPU78OPN4BYEgWYdX84AfsD7b8H.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+}
+
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 80px); /* Subtracts navbar height */
+}
+
+.auth-box {
+    background-color: rgba(0, 0, 0, 0.85); /* Semi-transparent black */
+    padding: 60px 68px 40px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.auth-box h2 {
+    color: white;
+    font-size: 2rem;
+    margin-bottom: 28px;
+}
+
+.auth-box form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.auth-box input {
+    background-color: #333;
+    border: none;
+    border-radius: 4px;
+    padding: 16px 20px;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+}
+
+.auth-box input:focus {
+    background-color: #444;
+}
+
+.auth-submit {
+    background-color: #e50914;
+    color: white;
+    padding: 16px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 24px;
+    transition: background-color 0.2s;
+}
+
+.auth-submit:hover {
+    background-color: #f40612;
+}
+
+.auth-switch {
+    color: #737373;
+    margin-top: 16px;
+    font-size: 1rem;
+}
+
+.auth-switch span {
+    color: white;
+    cursor: pointer;
+}
+
+.auth-switch span:hover {
+    text-decoration: underline;
+}
+
+.error-msg {
+    color: #e87c03; /* Netflix orange/yellow for errors */
+    margin-top: 15px;
+    font-size: 0.9rem;
+}

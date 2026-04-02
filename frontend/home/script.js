@@ -16,7 +16,7 @@ async function fetchAndDisplayMovies(endpoint,containerId){
             if (movie.backdrop_path) {
                 const mediaType = movie.media_type || (endpoint.startsWith('/tv') ? 'tv' : 'movie');
                 const link = document.createElement('a');
-                link.href = `details.html?type=${mediaType}&id=${movie.id}`;
+                link.href = '/frontend/Movie_details/details.html?type=' + encodeURIComponent(mediaType) + '&id=' + encodeURIComponent(movie.id);
                 link.classList.add('movie-card-link');
 
                 const card = document.createElement('div');
@@ -24,13 +24,13 @@ async function fetchAndDisplayMovies(endpoint,containerId){
 
                 const img = document.createElement('img');
                 img.src = `${IMAGE_BASE_URL}${movie.backdrop_path}`;
-                img.classList.add('movie-poster'); 
+                img.classList.add('movie-poster');
 
                 const info = document.createElement('div');
                 info.classList.add('movie-info');
                 // TMDB uses "title" for movies, but "name" for TV shows!
-                info.innerText = movie.title || movie.name; 
-                
+                info.innerText = movie.title || movie.name;
+
                 card.appendChild(img);
                 card.appendChild(info);
                 link.appendChild(card);  // this is wraping the whole card into <a> to make it clickable
@@ -109,13 +109,13 @@ async function searchMovies(query) {
         data.results.forEach(movie => {
             if (movie.poster_path) {
                 const link = document.createElement('a');
-                link.href = `details.html?type=movie&id=${movie.id}`;
+                link.href = '/frontend/Movie_details/details.html?type=movie&id=' + encodeURIComponent(movie.id);
 
                 const img = document.createElement('img');
                 img.src = `${IMAGE_BASE_URL}${movie.poster_path}`;
                 img.classList.add('movie-poster');
                 link.appendChild(img);
-                searchResultsContainer.appendChild(img);
+                searchResultsContainer.appendChild(link);
             }
         });
         
