@@ -21,6 +21,7 @@ async function buildDetailsPage() {
         const posterImg = document.getElementById('details-poster');
         if (data.poster_path) {
             posterImg.src = `${POSTER_BASE_URL}${data.poster_path}`; 
+            currentMoviePoster = data.poster_path;
         } else {
             posterImg.alt = "No poster available";
         }
@@ -321,7 +322,7 @@ async function saveMovieToPlaylist(playlistId) {
     const mediaType = urlParams.get('type') || 'movie';
     
     const movieTitle = document.getElementById('page-title').innerText; // Example
-    const posterPath = null; // Ideally, grab the poster path from your TMDB data variable here
+    const posterPath = currentMoviePoster;
 
     const payload = {
         movie_id: parseInt(movieId),

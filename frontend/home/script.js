@@ -46,6 +46,8 @@ const heroBanner=document.getElementById('hero-banner');
 const heroTitle=document.getElementById('hero-title');
 const heroDesc=document.getElementById('hero-description');
 const heroVideoContainer = document.getElementById('hero-video-container'); 
+let infomediatype;
+let infomovieid;
 async function fetchHeroBanner(){
     try{
         const url = `${BASE_URL}/trending/all/week?api_key=${API_KEY}`;
@@ -60,6 +62,8 @@ async function fetchHeroBanner(){
         heroBanner.style.backgroundImage = `url('https://image.tmdb.org/t/p/original${randomMovie.backdrop_path}')`;
 
         const mediaType = randomMovie.media_type || 'movie'; 
+        infomediatype=mediaType;
+        infomovieid=randomMovie.id;
         const videoUrl = `${BASE_URL}/${mediaType}/${randomMovie.id}/videos?api_key=${API_KEY}`;
         const videoResponse = await fetch(videoUrl);
         const videoData = await videoResponse.json();
@@ -194,6 +198,13 @@ const token = localStorage.getItem('moviebuddy_token');
             window.location.href = '/frontend/login_page/auth.html'; 
         });
     }
+
+const info_button=document.getElementById('info-button');
+info_button.addEventListener('click', () => {
+    window.location.href=`/frontend/Movie_details/details.html?type=${encodeURIComponent(infomediatype)}&id=${encodeURIComponent(infomovieid)}`;
+});
+
+
 
     
 // what we get in json from api call:

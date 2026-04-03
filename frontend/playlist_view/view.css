@@ -1,0 +1,69 @@
+.playlist-main {
+    padding: 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.playlist-header {
+    margin-bottom: 30px;
+}
+
+#playlist-title {
+    font-size: 2.5rem;
+    margin: 0 0 10px 0;
+}
+
+/* A grid specifically for wide, horizontal backdrop images */
+.cinematic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+/* The Cinematic Card matching your screenshot */
+.cinematic-card {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 16 / 9; /* Forces a perfect widescreen rectangle */
+    background-color: #1a1a1a;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+}
+
+.cinematic-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+}
+
+.cinematic-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* The text overlay at the bottom */
+.cinematic-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 30px 15px 15px 15px;
+    /* This creates the dark fade so the white text is readable! */
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.95), transparent);
+    color: white;
+    text-align: center;
+}
+
+.cinematic-info h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+    /* Keeps long titles on one line */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}

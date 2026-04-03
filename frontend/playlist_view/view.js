@@ -1,9 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const BACKEND_URL = 'http://localhost:8000/api'; 
+    const API_KEY = CONFIG.API_KEY; 
+    const BACKEND_URL = 'http://localhost:8000/api';
+    const TMDB_BACKDROP_URL = 'https://image.tmdb.org/t/p/w780';
+    // const TMDB_POSTER_URL = 'https://image.tmdb.org/t/p/w500'; 
     const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
     const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
-    const API_KEY = CONFIG.API_KEY;
-
+    // 1. Navbar Logic (Auth & Search)
     const token = localStorage.getItem('moviebuddy_token');
 
     const authBtn = document.getElementById('nav-auth-btn');
@@ -106,97 +108,64 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ==========================================
-    // 3. PLAYLIST FETCHING & UI LOGIC
-    // ==========================================
-    const container = document.getElementById('playlists-container');
-    const modal = document.getElementById('create-modal');
-    const cancelBtn = document.getElementById('cancel-btn');
-    const confirmBtn = document.getElementById('confirm-create-btn');
-    const nameInput = document.getElementById('new-playlist-name');
 
-    // Fetch folders from FastAPI
-    async function loadPlaylists() {
+    // 2. Grab the Playlist ID from the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const playlistId = urlParams.get('id');
+
+    if (!playlistId) {
+        document.getElementById('playlist-title').innerText = "Playlist not found.";
+        return;
+    }
+
+    // 3. Fetch and Render the Playlist
+    async function loadPlaylistData() {
         try {
-            const response = await fetch(`${BACKEND_URL}/playlists/`, {
+            const response = await fetch(`${BACKEND_URL}/watchlist/${playlistId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
             if (response.ok) {
                 const data = await response.json();
-                renderGrid(data.playlists);
+                
+                document.getElementById('playlist-title').innerText = data.playlist_name;
+                document.getElementById('playlist-count').innerText = `${data.movies.length} titles`;
+
+                const container = document.getElementById('cinematic-container');
+                container.innerHTML = '';
+
+                if (data.movies.length === 0) {
+                    container.innerHTML = '<p style="color: gray; font-size: 1.2rem;">This playlist is empty.</p>';
+                    return;
+                }
+
+                // Draw the widescreen cards!
+                data.movies.forEach(movie => {
+                    const cardLink = document.createElement('a');
+                    // Point back to the REAL details page when a movie is clicked!
+                    cardLink.href = `../Movie_details/details.html?type=${movie.media_type}&id=${movie.movie_id}`;
+                    cardLink.classList.add('cinematic-card');
+
+                    // If TMDB gave us a poster instead of a backdrop, we just stretch it nicely using object-fit: cover
+                    const imagePath = movie.backdrop_path ? `${TMDB_BACKDROP_URL}${movie.backdrop_path}` : `${TMDB_IMAGE_BASE_URL}${movie.poster_path}`;
+
+                    cardLink.innerHTML = `
+                        <img src="${imagePath}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/600x337/222222/cccccc?text=No+Image'">
+                        <div class="cinematic-info">
+                            <h3>${movie.title}</h3>
+                        </div>
+                    `;
+                    
+                    container.appendChild(cardLink);
+                });
+
             } else {
-                console.error("Failed to load playlists");
+                document.getElementById('playlist-title').innerText = "Failed to load playlist.";
             }
         } catch (error) {
             console.error("Error:", error);
         }
     }
 
-    // Draw the YouTube-style grid
-    function renderGrid(playlists) {
-        container.innerHTML = ''; 
-
-        // 1. Draw the "+ New Playlist" card first
-        const createCard = document.createElement('div');
-        createCard.classList.add('playlist-card', 'create-card');
-        createCard.innerHTML = `<h3>+ New Playlist</h3>`;
-        createCard.addEventListener('click', () => {
-            modal.classList.remove('hidden'); 
-            nameInput.focus();
-        });
-        container.appendChild(createCard);
-
-        // 2. Loop through backend data and draw the rest
-        playlists.forEach(pl => {
-            const card = document.createElement('a');
-            card.href = `/frontend/playlist_view/view.html?id=${pl._id}`;
-            card.classList.add('playlist-card');
-            
-            card.innerHTML = `
-                <h3>${pl.name}</h3>
-                <p>${pl.type === 'default' ? 'Default' : 'Custom'} Playlist</p>
-            `;
-            
-            container.appendChild(card);
-        });
-    }
-
-    // ==========================================
-    // 4. MODAL EVENT LISTENERS
-    // ==========================================
-    cancelBtn.addEventListener('click', () => {
-        modal.classList.add('hidden');
-        nameInput.value = ''; 
-    });
-
-    confirmBtn.addEventListener('click', async () => {
-        const newName = nameInput.value.trim();
-        if (!newName) return;
-
-        try {
-            const response = await fetch(`${BACKEND_URL}/playlists/create`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ name: newName })
-            });
-
-            if (response.ok) {
-                modal.classList.add('hidden');
-                nameInput.value = '';
-                loadPlaylists(); // Refresh grid to show the new folder!
-            } else {
-                const errorData = await response.json();
-                alert(errorData.detail || "Failed to create playlist.");
-            }
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    });
-
-    // Boot up the page!
-    loadPlaylists();
+    loadPlaylistData();
 });

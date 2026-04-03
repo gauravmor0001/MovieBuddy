@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Playlist - MovieBuddy</title>
+    <link rel="stylesheet" href="../home/style.css"> <link rel="stylesheet" href="view.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <h1 class="logo"><a href="/frontend/home/index.html" style="color:red; text-decoration:none;">MovieBuddy</a></h1>
+        <div class="search-box">
+            <input type="text" id="searchinput" placeholder="Search movies & shows...">
+            <button id="searchbutton">Search</button>
+        </div>
+        <div class="nav-links">
+            <a href="/frontend/home/index.html" id="home-link">Home</a>
+            <a href="/frontend/watchlist/watchlist.html">Watchlist</a>
+            <a href="/frontend/login_page/auth.html" id="nav-auth-btn" class="sign-in-btn">Sign In</a> 
+        </div>
+    </nav>
+
+    <main class="playlist-main">
+        <section class="movie-row" id="search-section" style="display: none;">
+            <h2 id="search-heading">Search Results</h2>
+            <div class="search-grid" id="search-results"></div>
+        </section>
+
+        <div class="playlist-header">
+            <h1 id="playlist-title">Loading Playlist...</h1>
+            <p id="playlist-count" style="color: #aaa;">-- movies</p>
+        </div>
+
+        <div class="cinematic-grid" id="cinematic-container">
+            </div>
+    </main>
+    <script src="/frontend/home/config.js"></script>
+    <script src="view.js"></script>
+
+</body>
+</html>
