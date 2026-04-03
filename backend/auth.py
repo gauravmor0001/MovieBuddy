@@ -7,7 +7,7 @@ from pydantic import BaseModel, EmailStr
 from passlib.context import CryptContext
 from bson import ObjectId
 
-from database import users_collection 
+from database import users_collection, playlists_collection
 
 router = APIRouter()
 
@@ -69,6 +69,15 @@ async def register_user(user: UserCreate):
         "password": get_password_hash(user.password) 
     }
     new_user = await users_collection.insert_one(user_dict)
+
+    default_playlists = [
+        {"user_id": str(new_user.inserted_id), "name": "Watch Later", "type": "default"},
+        {"user_id": str(new_user.inserted_id), "name": "Liked", "type": "default"},
+        {"user_id": str(new_user.inserted_id), "name": "Watched", "type": "default"}
+    ]
+    
+    await playlists_collection.insert_many(default_playlists)
+
     return {"message": "User registered!", "user_id": str(new_user.inserted_id)}
 
 @router.post("/login")

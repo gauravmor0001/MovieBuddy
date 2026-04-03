@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Playlists - MovieBuddy</title>
+    <link rel="stylesheet" href="../home/style.css">
+    <link rel="stylesheet" href="watchlist.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <h1 class="logo"><a href="/frontend/home/index.html" style="color:red; text-decoration:none;">MovieBuddy</a></h1>
+        
+        <div class="search-box">
+            <input type="text" id="searchinput" placeholder="Search movies & shows...">
+            <button id="searchbutton">Search</button>
+        </div>
+        
+        <div class="nav-links">
+            <a href="/frontend/home/index.html" id="home-link">Home</a>
+            <a href="/frontend/watchlist/watchlist.html">Watchlist</a>
+            <a href="/frontend/login_page/auth.html" id="nav-auth-btn" class="sign-in-btn">Sign In</a> 
+        </div>
+    </nav>
+
+    <main class="details-main" style="padding: 20px 40px;">
+
+        <section class="movie-row" id="search-section" style="display: none;">
+            <h2 id="search-heading">Search Results</h2>
+            <div class="search-grid" id="search-results"></div>
+        </section>
+
+        <section id="playlists-main-section">
+            <h2 style="font-size: 2rem; margin-bottom: 20px;">Playlists</h2>
+            <div class="playlists-grid" id="playlists-container">
+                </div>
+        </section>
+
+    </main>
+
+    <div id="create-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Create New Playlist</h2>
+            <input type="text" id="new-playlist-name" placeholder="E.g., Weekend Binge">
+            <div class="modal-buttons">
+                <button id="cancel-btn" class="btn secondary">Cancel</button>
+                <button id="confirm-create-btn" class="btn primary">Create</button>
+            </div>
+        </div>
+    </div>
+    <script src="/frontend/home/config.js"></script>
+    <script src="watchlist.js"></script>
+    
+</body>
+</html>

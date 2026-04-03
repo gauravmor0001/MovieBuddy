@@ -173,6 +173,29 @@ const searchResultsContainer = document.getElementById('search-results');
 const searchHeading = document.getElementById('search-heading');
 
 
+const token = localStorage.getItem('moviebuddy_token');
+
+    const authBtn = document.getElementById('nav-auth-btn');
+    
+    if (token) {
+        authBtn.innerText = "Logout";
+        // 2. Stop it from going to auth.html
+        authBtn.href = "#"; 
+        
+
+        authBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // Stop the link from jumping the page
+            
+            // Delete the VIP wristbands from memory
+            localStorage.removeItem('moviebuddy_token');
+            localStorage.removeItem('moviebuddy_username');
+            
+            // Kick them back to the home page (or login page)
+            window.location.href = '/frontend/login_page/auth.html'; 
+        });
+    }
+
+    
 // what we get in json from api call:
 // {
 //   "page": 1,

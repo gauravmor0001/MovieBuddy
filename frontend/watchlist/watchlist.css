@@ -1,0 +1,121 @@
+/* YouTube-style Grid Layout */
+.playlists-grid {
+    display: grid;
+    /* This sizing matches the wide, rectangular look of YouTube playlist cards */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding-bottom: 40px;
+}
+
+/* The Playlist Card */
+.playlist-card {
+    background-color: #212121; /* YouTube dark grey */
+    border-radius: 12px;
+    height: 150px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* Pushes text to the bottom */
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+    text-decoration: none;
+    color: white;
+    border: 1px solid #3d3d3d;
+    position: relative;
+    overflow: hidden;
+}
+
+.playlist-card:hover {
+    background-color: #383838;
+    transform: scale(1.02);
+}
+
+.playlist-card h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.1rem;
+    z-index: 2;
+}
+
+.playlist-card p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #aaaaaa;
+    z-index: 2;
+}
+
+/* The Special "Create New" Card */
+.create-card {
+    background-color: transparent;
+    border: 2px dashed #717171;
+    align-items: center;
+    justify-content: center;
+}
+
+.create-card h3 {
+    color: #aaaaaa;
+}
+
+.create-card:hover {
+    border-color: white;
+}
+
+.create-card:hover h3 {
+    color: white;
+}
+
+/* --- MODAL STYLING --- */
+.modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background-color: #212121;
+    padding: 30px;
+    border-radius: 10px;
+    width: 320px;
+    text-align: center;
+    border: 1px solid #3d3d3d;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 12px;
+    margin: 20px 0;
+    border-radius: 6px;
+    border: 1px solid #3d3d3d;
+    background-color: #121212;
+    color: white;
+    outline: none;
+}
+
+.modal-content input:focus {
+    border-color: #e50914; /* Red focus ring */
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn.primary { background-color: #e50914; color: white; }
+.btn.primary:hover { background-color: #f40612; }
+.btn.secondary { background-color: #3d3d3d; color: white; }
+.btn.secondary:hover { background-color: #4d4d4d; }

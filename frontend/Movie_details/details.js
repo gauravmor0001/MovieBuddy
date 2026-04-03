@@ -3,6 +3,8 @@ const BASE_URL = 'https://api.themoviedb.org/3';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/original'; 
 const POSTER_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
+let currentMoviePoster = null;
+
 // This built-in JS tool reads the web address (e.g., ?type=movie&id=27205)
 const urlParams = new URLSearchParams(window.location.search);
 const mediaType = urlParams.get('type'); // Grabs "movie" or "tv"
@@ -18,7 +20,7 @@ async function buildDetailsPage() {
 
         const posterImg = document.getElementById('details-poster');
         if (data.poster_path) {
-            posterImg.src = `${POSTER_BASE_URL}${data.poster_path}`;
+            posterImg.src = `${POSTER_BASE_URL}${data.poster_path}`; 
         } else {
             posterImg.alt = "No poster available";
         }
@@ -45,12 +47,6 @@ async function buildDetailsPage() {
         }
 
         document.getElementById('movie-description').innerText = data.overview || "No description available for this title.";
-        const watchlistBtn = document.getElementById('watchlist-btn');
-        watchlistBtn.addEventListener('click', () => {
-            // For now, we just show a popup. 
-            // Later, this will open your "Select a Playlist" menu!
-            alert(`Opening playlist menu to save: ${data.title || data.name}`);
-        });
 
         const fullDate = data.release_date || data.first_air_date;
         const releaseYear = fullDate ? fullDate.substring(0, 4) : "N/A";
@@ -74,14 +70,15 @@ async function buildDetailsPage() {
         }
         document.getElementById('tmdb-count').innerText = `${formattedCount} votes`;
 
-        const providersContainer = document.getElementById('watch-providers');
         if (data.id) {
             const fakeRTScore = (data.id % 40) + 60; 
             document.getElementById('rt-score').innerText = `${fakeRTScore}%`;
         } else {
             document.getElementById('rt-score').innerText = "N/A";
         }
-        
+
+
+        const providersContainer = document.getElementById('watch-providers');
         // 'US' to 'IN' 
         const providersData = data['watch/providers']?.results?.US;
 
@@ -147,7 +144,6 @@ if (mediaId && mediaType) {
 }
 
 // search code:
-
 const searchInput = document.getElementById('search-input');
 const searchBtn = document.getElementById('search-btn');
 
@@ -229,3 +225,132 @@ searchinput.addEventListener('keypress', (event) => {
 const searchSection = document.getElementById('search-section');
 const searchResultsContainer = document.getElementById('search-results');
 const searchHeading = document.getElementById('search-heading');
+
+
+const token = localStorage.getItem('moviebuddy_token');
+const authBtn = document.getElementById('nav-auth-btn');
+if (token) {
+    authBtn.innerText = "Logout";
+    // 2. Stop it from going to auth.html
+    authBtn.href = "#"; //we first want to remove the web token so we stop its ablity to go.
+    authBtn.addEventListener('click', (e) => {
+        e.preventDefault(); // Stop the link from jumping the page
+        
+        // Delete the VIP wristbands from memory
+        localStorage.removeItem('moviebuddy_token');
+        localStorage.removeItem('moviebuddy_username');
+        
+        // Kick them back to the home page (or login page)
+        window.location.href = '/frontend/login_page/auth.html'; 
+    });
+}
+
+const saveBtn = document.getElementById('watchlist-btn'); 
+const saveModal = document.getElementById('save-modal');
+const closeSaveModalBtn = document.getElementById('close-save-modal');
+const playlistOptionsContainer = document.getElementById('playlist-options-container');
+
+// 1. OPEN MODAL & FETCH PLAYLISTS
+if (saveBtn) {
+    saveBtn.addEventListener('click', async () => {
+        const token = localStorage.getItem('moviebuddy_token');
+        if (!token) {
+            alert("Please sign in to save movies!");
+            window.location.href = '/frontend/login_page/auth.html';
+            return;
+        }
+
+        saveModal.classList.remove('hidden'); // Show the popup
+        playlistOptionsContainer.innerHTML = '<p style="text-align: center; color: #aaa;">Loading...</p>';
+
+        try {
+            const response = await fetch('http://localhost:8000/api/playlists/', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                renderPlaylistOptions(data.playlists);
+            } else {
+                playlistOptionsContainer.innerHTML = '<p style="color: red; text-align: center;">Failed to load playlists.</p>';
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    });
+}
+
+closeSaveModalBtn.addEventListener('click', () => {
+    saveModal.classList.add('hidden');
+});
+//Close if they click the dark background outside the box
+saveModal.addEventListener('click', (e) => {
+    if (e.target === saveModal) {
+        saveModal.classList.add('hidden');
+    }
+});
+
+// 3. DRAW THE PLAYLIST ROWS
+function renderPlaylistOptions(playlists) {
+    playlistOptionsContainer.innerHTML = ''; // Clear loading text
+
+    playlists.forEach(pl => {
+        const row = document.createElement('div');
+        row.classList.add('playlist-row');
+        
+        row.innerHTML = `
+            <div>
+                <h4>${pl.name}</h4>
+                <p>${pl.type === 'default' ? 'Default' : 'Custom'} Playlist</p>
+            </div>
+        `;
+
+        // 4. WHEN THEY CLICK A PLAYLIST, SAVE THE MOVIE!
+        row.addEventListener('click', () => saveMovieToPlaylist(pl._id));
+
+        playlistOptionsContainer.appendChild(row);
+    });
+}
+
+// 5. THE FINAL API CALL TO SAVE
+async function saveMovieToPlaylist(playlistId) {
+    const token = localStorage.getItem('moviebuddy_token');
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const movieId = urlParams.get('id');
+    const mediaType = urlParams.get('type') || 'movie';
+    
+    const movieTitle = document.getElementById('page-title').innerText; // Example
+    const posterPath = null; // Ideally, grab the poster path from your TMDB data variable here
+
+    const payload = {
+        movie_id: parseInt(movieId),
+        title: movieTitle,
+        poster_path: posterPath,
+        media_type: mediaType,
+        playlist_id: playlistId
+    };
+
+    try {
+        const response = await fetch('http://localhost:8000/api/watchlist/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert("Added successfully!");
+            saveModal.classList.add('hidden');
+        } else {
+            
+            alert(result.detail || "Could not add to playlist."); 
+        }
+    } catch (error) {
+        console.error("Error saving:", error);
+    }
+}

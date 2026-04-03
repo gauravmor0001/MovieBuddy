@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from auth import router as auth_router, get_current_user
 from watchlist import router as watchlist_router
-
+import playlist
 app = FastAPI(title="MovieBuddy API")
 
 app.add_middleware(
@@ -22,6 +22,7 @@ app.include_router(
     # This dependencies list acts as a global bouncer for every route inside watchlist.py
     dependencies=[Depends(get_current_user)] 
 )
+app.include_router(playlist.router, prefix="/api/playlists", tags=["Playlists"])
 
 @app.get("/")
 async def home():

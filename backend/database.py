@@ -7,6 +7,7 @@ load_dotenv()
 MONGO_URI = os.getenv("Mongo")
 
 client = AsyncIOMotorClient(MONGO_URI)
-db = client.moviebuddy_db       
+db = client.moviebuddy_db        #the main database
 users_collection = db.users     
-watchlists_collection = db.watchlists
+playlists_collection = db.playlists #store user playlists
+watchlist_entries_collection = db.watchlists_entries
