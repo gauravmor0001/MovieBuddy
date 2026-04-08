@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">  <!-- for mobile -->
     <title>MovieBuddy</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/frontend/chatbot/chatbot.css">
 </head>
 <body>
 
@@ -88,6 +89,30 @@
         
         
     </main>
+    <div id="moviebuddy-chat-widget">
+        <div id="chat-popup" class="chat-popup hidden">
+            <div class="chat-header">
+                <span>MovieBuddy AI</span>
+                <button id="close-chat-btn" class="close-btn">&times;</button>
+            </div>
+            
+            <div class="chat-box" id="chat-box">
+                <div class="message bot-msg">
+                    Hi there! Tell me what vibe you're looking for, and I'll find the perfect movie! 🍿
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <input type="text" id="user-input" placeholder="e.g., A funny space movie..." onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+
+        <button id="chat-bubble-btn" class="chat-bubble-btn">
+            <img src="./chatbot.jpg">
+        </button>
+    </div>
+    <script src="/frontend/chatbot/chatbot.js"></script>
     <script src="config.js"></script>
     <script src="script.js"></script>
 </body>

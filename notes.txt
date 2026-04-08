@@ -1,0 +1,16 @@
+###To add groq:
+->pip install groq
+->from groq import Groq
+->groq_client = Groq(api_key=GROQ_API_KEY)
+->chat_completion = groq_client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_text}
+            ],
+            model="llama3-8b-8192", 
+            temperature=0.7 
+        )
+
+        llm_reply = chat_completion.choices[0].message.content
+
+###aggregate is the steps we want to do on data or process the data in stages.

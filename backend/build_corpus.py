@@ -25,7 +25,7 @@ corpus_collection = db.movie_corpus
 print("Loading AI Model...")
 model = SentenceTransformer('all-MiniLM-L6-v2')
 seen_movie_ids = set()
-TOTAL_PAGES = 50
+TOTAL_PAGES = 100
 movies_to_insert = []
 
 print("\nStarting to fetch and vectorize movies. This will take a few minutes...\n")
