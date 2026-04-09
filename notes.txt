@@ -14,3 +14,51 @@
         llm_reply = chat_completion.choices[0].message.content
 
 ###aggregate is the steps we want to do on data or process the data in stages.
+
+
+## random is an built in module in python,so no need to pip it. use case:
+(random.randint(1, 10)) gives random int betn 1 and 10.
+random.random() , gives no. betn 0 and 1.
+movies = ["Inception", "Titanic", "Avatar"]
+print(random.choice(movies)),random.shuffle(movies)
+
+### from datetime import datetime, timedelta
+datetime.now() gives 2026-04-09 19:30:00
+now = datetime.now()
+future = now + timedelta(days=5)
+
+###from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
+router=APIRouter()
+@router.post(..)
+
+def get_db():
+    return "DB Connection"
+@router.get("/")
+def home(db = Depends(get_db)):
+    return db
+
+@router.websocket("/ws")
+async def websocket_endpoint(ws: WebSocket):
+    await ws.accept()
+    data = await ws.receive_text()
+    await ws.send_text(f"You said: {data}")
+
+try:
+    data = await ws.receive_text()
+except WebSocketDisconnect:
+    print("User disconnected")
+
+### payload = jwt.decode(token, JWT_SECRET, algorithms=[ALGORITHM])
+    user_id: str = payload.get("sub")
+    now the token is decoded to HEADER.PAYLOAD.SIGNATURE
+    now the payload contain data like:{"sub": "65f1a2b3c4d5e6f7890abcde","exp": 1712345678}
+    the sub mostly contains the user_id as it is made like:token = jwt.encode({"sub": str(user._id),"exp": expiry_time}, JWT_SECRET, algorithm=ALGORITHM)
+->to import something in python from the other file just say from{file_name} import{function_name}
+
+###numpy:
+import numpy as np
+arr = np.array([1, 2, 3])
+print(arr * 2)
+np.zeros(3)      # [0. 0. 0.]
+np.ones(3)       # [1. 1. 1.]
+np.arange(0, 10) # [0 1 2 ... 9]

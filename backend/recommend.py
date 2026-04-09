@@ -8,6 +8,39 @@ from auth import get_current_user
 import numpy as np
 
 router = APIRouter() 
+
+async def get_taste_vector(user_id: str):
+    """
+    Builds a single taste vector for a user from their Liked playlist.
+    Returns a numpy array of shape (384,) or None if no liked movies found.
+    """
+    liked_playlist = await playlists_collection.find_one(
+        {"user_id": user_id, "name": "Liked"}
+    )
+    if not liked_playlist:
+        return None
+
+    liked_entries = await watchlist_entries_collection.find(
+        {"playlist_id": str(liked_playlist["_id"])}
+    ).to_list(length=None)
+    liked_movie_ids = [int(e["movie_id"]) for e in liked_entries]
+
+    if not liked_movie_ids:
+        return None
+
+    liked_corpus = await db.movie_corpus.find(
+        {"movie_id": {"$in": liked_movie_ids}},
+        {"embedding": 1}
+    ).to_list(length=None)
+
+    if not liked_corpus:
+        return None
+
+    vectors = [doc["embedding"] for doc in liked_corpus if "embedding" in doc]
+    return np.mean(vectors, axis=0)  # shape: (384,)
+
+
+
 @router.get("/api/recommend")
 async def get_for_you_recommendations(current_user=Depends(get_current_user)):
     user_id = str(current_user["_id"])

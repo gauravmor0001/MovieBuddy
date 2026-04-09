@@ -4,8 +4,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from auth import router as auth_router, get_current_user
 from watchlist import router as watchlist_router
 import playlist
-import chatbot 
+from chatbot import router as chat_router 
 from recommend import router as recommend_router 
+from room import router as room_router
 app = FastAPI(title="MovieBuddy API")
 
 app.add_middleware(
@@ -26,7 +27,8 @@ app.include_router(
 )
 app.include_router(recommend_router, tags=["Recommendations"])
 app.include_router(playlist.router, prefix="/api/playlists", tags=["Playlists"])
-app.include_router(chatbot.router)
+app.include_router(chat_router,prefix="/api/chat", tags=["chat"])
+app.include_router(room_router, prefix="/api/room", tags=["Room"])
 
 
 @app.get("/")
