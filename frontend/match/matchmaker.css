@@ -1,0 +1,376 @@
+ * { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+      background-color: #141414;
+      color: #fff;
+      font-family: 'Netflix Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+}
+
+#waiting-screen{
+    text-align: center;
+}
+.room-icon {
+      font-size: 56px;
+      margin-bottom: 24px;
+      display: block;
+}
+#waiting-screen h1 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 12px;
+}
+#waiting-screen p.subtitle {
+      color: #aaa;
+      font-size: 16px;
+      margin-bottom: 40px;
+}
+.link-box {
+      background: #2a2a2a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 36px;
+      max-width: 480px;
+      width: 100%;
+}
+
+
+.link-box span {
+    flex: 1;
+    color: #ccc;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.copy-btn {
+      background: #e50914;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;  /* “Do NOT wrap text to the next line.” */
+      transition: background 0.2s;
+}
+
+
+.copy-btn:hover { background: #f40612; }
+.copy-btn.copied { background: #2ecc71; }
+ 
+    /* Status indicator */
+.status-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+}
+.spinner {
+      width: 52px;
+      height: 52px;
+      border: 4px solid #333;
+      border-top-color: #e50914;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+}
+ 
+@keyframes spin {
+      to { transform: rotate(360deg); }
+}
+ 
+.status-text {
+      font-size: 18px;
+      font-weight: 500;
+      color: #eee;
+}
+
+.status-sub {
+    font-size: 13px;
+    color: #888;
+}
+
+/* User avatars row */
+.avatars {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.avatar {
+width: 56px;
+height: 56px;
+border-radius: 50%;
+background: #333;
+border: 3px solid #555;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 20px;
+font-weight: 700;
+color: #fff;
+transition: border-color 0.4s;
+}
+
+.avatar.you { border-color: #e50914; background: #3a0a0a; }
+.avatar.them.connected { border-color: #2ecc71; background: #0a2a15; }
+
+.avatar-divider {
+    font-size: 22px;
+    color: #555;
+}
+
+/* Countdown */
+.countdown {
+    color: #666;
+    font-size: 13px;
+}
+
+.countdown span {
+    color: #aaa;
+    font-weight: 600;
+}
+
+
+    /* ────────────────────────────────
+       SCREEN 2 — CALCULATING
+    ──────────────────────────────── */
+    #calculating-screen {
+      text-align: center;
+    }
+ 
+    #calculating-screen h1 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+ 
+    #calculating-screen p {
+      color: #aaa;
+      font-size: 15px;
+      margin-bottom: 40px;
+    }
+ 
+    .calc-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-width: 360px;
+      width: 100%;
+    }
+ 
+    .calc-step {
+      background: #1e1e1e;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 14px;
+      color: #888;
+      transition: all 0.4s;
+    }
+ 
+    .calc-step.done {
+      border-color: #2ecc71;
+      color: #eee;
+    }
+ 
+    .calc-step .step-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid #555;
+      flex-shrink: 0;
+      transition: all 0.4s;
+    }
+ 
+    .calc-step.done .step-icon {
+      background: #2ecc71;
+      border-color: #2ecc71;
+    }
+ /* ────────────────────────────────
+       SCREEN 3 — RESULTS
+    ──────────────────────────────── */
+#results-screen {
+    width: 100%;
+    max-width: 1200px;
+}
+
+.results-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.results-header h1 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+
+.results-header p {
+    color: #aaa;
+    font-size: 15px;
+}
+
+.match-badge {
+    display: inline-block;
+    background: #e50914;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 4px;
+    letter-spacing: 1px;    
+    margin-bottom: 16px;
+    text-transform: uppercase;
+}
+
+.movies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+}
+ 
+.movie-card {
+    background: #1e1e1e;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+ 
+.movie-card:hover {
+    transform: scale(1.04);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+
+.movie-card img {
+    width: 100%;
+    aspect-ratio: 2/3;
+    object-fit: cover;
+    display: block;
+    background: #2a2a2a;
+}
+
+.movie-card .card-info {
+    padding: 12px;
+}
+
+.movie-card .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.movie-card .card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.movie-card .rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #f5c518;
+}
+
+
+.movie-card .year {
+    font-size: 11px;
+    color: #777;
+}
+
+.genre-tags {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+}
+
+.genre-tag {
+    background: #2a2a2a;
+    color: #aaa;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 3px;
+}
+
+#error-screen {
+      text-align: center;
+    }
+ 
+    #error-screen .error-icon {
+      font-size: 64px;
+      margin-bottom: 24px;
+      display: block;
+    }
+ 
+    #error-screen h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+ 
+    #error-screen p {
+      color: #aaa;
+      font-size: 15px;
+      margin-bottom: 28px;
+    }
+ 
+    .btn-primary {
+      display: inline-block;
+      background: #e50914;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 28px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+ 
+    .btn-primary:hover { background: #f40612; }
+ 
+    /* ── No poster fallback ── */
+    .no-poster {
+      width: 100%;
+      aspect-ratio: 2/3;
+      background: #2a2a2a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      color: #555;
+    }
+
+    .page {
+    display: none;
+    min-height: calc(100vh - 70px);
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    flex-direction: column;
+}
+
+.page.active {
+    display: flex;
+}

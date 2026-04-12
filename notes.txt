@@ -53,7 +53,6 @@ except WebSocketDisconnect:
     now the token is decoded to HEADER.PAYLOAD.SIGNATURE
     now the payload contain data like:{"sub": "65f1a2b3c4d5e6f7890abcde","exp": 1712345678}
     the sub mostly contains the user_id as it is made like:token = jwt.encode({"sub": str(user._id),"exp": expiry_time}, JWT_SECRET, algorithm=ALGORITHM)
-->to import something in python from the other file just say from{file_name} import{function_name}
 
 ###numpy:
 import numpy as np
@@ -62,3 +61,26 @@ print(arr * 2)
 np.zeros(3)      # [0. 0. 0.]
 np.ones(3)       # [1. 1. 1.]
 np.arange(0, 10) # [0 1 2 ... 9]
+
+
+###flex:
+.container {
+    display: flex; (refer this to the parent div and all the children element will align in horizontally in one line)
+    justify-content: center; (space-between,space-around)
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;(default is row)
+}
+display:block (takes the entire line)
+
+
+
+
+
+
+
+->to import something in python from the other file just say from{file_name} import{function_name}
+->to convert python object into json we use json.dumps() and to convert back to normal is json.loads()
+->navigator.clipboard.writeText(link) (copy to clipboard)
+->to get anything from the localStorage we can use localStorage.getItem('name'),to delete anything from localStorage use localStorage.removeItem('name')
+->const urlParams = new URLSearchParams(window.location.search); gets the query string part of the URL eg "?token=xyz&user=gaurav"

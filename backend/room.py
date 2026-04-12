@@ -3,7 +3,7 @@ import string
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from database import db, watchlist_entries_collection
-from auth import verify_token
+from auth import verify_token, get_current_user
 from recommend import get_taste_vector
 import numpy as np
 
@@ -33,8 +33,6 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
-# ─── Helpers ──────────────────────────────────────────────────────────────────
-
 def generate_room_id(length=8):
     chars = string.ascii_lowercase + string.digits
     return ''.join(random.choices(chars, k=length))
@@ -44,11 +42,10 @@ async def calculate_midpoint_recommendations(room: dict):
     user_a_id = room["created_by"]
     user_b_id = room["guest"]
 
-    # 1. Get taste vectors for both users (reusing recommend.py logic)
     vector_a = await get_taste_vector(user_a_id)
     vector_b = await get_taste_vector(user_b_id)
 
-    # 2. Handle cases where one/both users have empty Liked playlists
+    # Handle cases where one/both users have empty Liked playlists
     if vector_a is None and vector_b is None:
         return []
     elif vector_a is None:
@@ -56,9 +53,10 @@ async def calculate_midpoint_recommendations(room: dict):
     elif vector_b is None:
         midpoint = vector_a
     else:
-        midpoint = (vector_a + vector_b) / 2  # core math
+        midpoint = (vector_a + vector_b) / 2 
 
-    # 3. Exclusion list — union of both users' saved movies
+    # Exclusion list — union of both users' saved movies
+    # .find() does not return the results it returns us let say pointer, to convert that into data we need to_lsit that is provided by Motor
     entries_a = await watchlist_entries_collection.find(
         {"user_id": user_a_id}
     ).to_list(length=None)
@@ -71,7 +69,6 @@ async def calculate_midpoint_recommendations(room: dict):
         [int(e["movie_id"]) for e in entries_b]
     ))
 
-    # 4. Fetch all corpus movies not saved by either user
     all_movies = await db.movie_corpus.find(
         {"movie_id": {"$nin": excluded_ids}},
         {
@@ -84,17 +81,14 @@ async def calculate_midpoint_recommendations(room: dict):
     if not all_movies:
         return []
 
-    # 5. Cosine similarity against midpoint vector
     corpus_vectors = np.array([m["embedding"] for m in all_movies])
 
-    midpoint_norm = midpoint / (np.linalg.norm(midpoint) + 1e-10)
+    midpoint_norm = midpoint / (np.linalg.norm(midpoint) + 1e-10) #Divides vector by its magnitude → makes it unit vector
     corpus_norms = corpus_vectors / (
         np.linalg.norm(corpus_vectors, axis=1, keepdims=True) + 1e-10
     )
 
-    similarities = corpus_norms @ midpoint_norm
-
-    # 6. Top 10
+    similarities = corpus_norms @ midpoint_norm #@=matrix multiplication (dot product)
     top_indices = np.argsort(similarities)[::-1][:10]
 
     recommendations = []
@@ -106,13 +100,10 @@ async def calculate_midpoint_recommendations(room: dict):
     return recommendations
 
 
-# ─── HTTP Endpoint ────────────────────────────────────────────────────────────
-
 @router.post("/create")
-async def create_room(current_user=Depends(verify_token)):
+async def create_room(current_user=Depends(get_current_user)):
     user_id = str(current_user["_id"])
 
-    # Return existing active room if one already exists
     existing = await db.rooms.find_one({
         "created_by": user_id,
         "status": "waiting",
@@ -135,12 +126,9 @@ async def create_room(current_user=Depends(verify_token)):
     return {"room_id": room_id}
 
 
-# ─── WebSocket Endpoint ───────────────────────────────────────────────────────
-
 @router.websocket("/ws/{room_id}")
 async def room_websocket(room_id: str, websocket: WebSocket, token: str):
 
-    # 1. Authenticate via query param token
     user_data = verify_token(token)
     if not user_data:
         await websocket.close(code=4001)
@@ -148,7 +136,6 @@ async def room_websocket(room_id: str, websocket: WebSocket, token: str):
 
     user_id = str(user_data["_id"])
 
-    # 2. Validate room
     room = await db.rooms.find_one({
         "room_id": room_id,
         "expires_at": {"$gt": datetime.utcnow()}
@@ -157,7 +144,6 @@ async def room_websocket(room_id: str, websocket: WebSocket, token: str):
         await websocket.close(code=4004)
         return
 
-    # 3. Register guest if this is a different user joining
     if room["created_by"] != user_id and room["guest"] is None:
         await db.rooms.update_one(
             {"room_id": room_id},
@@ -178,7 +164,6 @@ async def room_websocket(room_id: str, websocket: WebSocket, token: str):
     })
 
     try:
-        # 5. Both users present — calculate and broadcast results
         if current_count == 2:
             await manager.broadcast(room_id, {
                 "event": "both_connected",
@@ -192,13 +177,11 @@ async def room_websocket(room_id: str, websocket: WebSocket, token: str):
                 "recommendations": recommendations
             })
 
-            # Mark room as done — no more joining needed
             await db.rooms.update_one(
                 {"room_id": room_id},
                 {"$set": {"status": "done"}}
             )
 
-        # 6. Keep connection alive
         while True:
             await websocket.receive_text()
 
