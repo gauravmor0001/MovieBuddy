@@ -87,7 +87,7 @@ async def get_for_you_recommendations(current_user=Depends(get_current_user)):
                 "index": "vector_index",      # Your Atlas Search index
                 "path": "embedding",          # The field to search
                 "queryVector": taste_vector,  # The Taste DNA 
-                "numCandidates": 100,         # Look at the 100 closest matches
+                "numCandidates": 200,         # Look at the 200 closest matches,this only compare with closest 200 movie vector(save money and time)
                 "limit": 50                   # Return the top 20
             }
         },
@@ -101,12 +101,24 @@ async def get_for_you_recommendations(current_user=Depends(get_current_user)):
             # Format the output so we don't send massive arrays to the frontend
             "$project": {
                 "_id": 0,
-                "embedding": 0 
+                "embedding": 0 ,
+                "raw_score": {"$meta": "vectorSearchScore"}
             }
         }
     ]
 
-    # Execute the pipeline asynchronously
-    recommendations = await db.movie_corpus.aggregate(pipeline).to_list(length=None)
+    raw_recommendations = await db.movie_corpus.aggregate(pipeline).to_list(length=None)
+    final_recommendations = []
+    for movie in raw_recommendations:
+        score_decimal = movie.get("raw_score", 0) 
+        match_percentage = int(round(score_decimal * 100))
+        
+        if match_percentage > 98:
+            match_percentage = 98
+            
+        movie["match_score"] = match_percentage
+        movie.pop("raw_score", None) 
+        
+        final_recommendations.append(movie)
 
-    return {"status": "success", "recommendations": recommendations}
+    return {"status": "success", "recommendations": final_recommendations}

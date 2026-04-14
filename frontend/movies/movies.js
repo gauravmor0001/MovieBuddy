@@ -13,6 +13,7 @@ let totalPages = 1;
 let isLoading = false;
 let currentGenre = '';
 let currentSort = 'popularity.desc';
+let currentType = 'movie';
 
 // ── Navbar auth ──────────────────────────────────────────────
 const token = localStorage.getItem('moviebuddy_token');
@@ -36,29 +37,47 @@ async function fetchMovies() {
     loader.style.display = 'block';
 
     try {
-        let url = `${TMDB_BASE}/discover/movie?api_key=${TMDB_API_KEY}&language=en-US&page=${currentPage}&sort_by=${currentSort}`;
+        let results = [];
 
-        if (currentGenre) {
-            url += `&with_genres=${currentGenre}`;
+        if (currentType === 'both') {
+            // Fetch movies and TV in parallel, then interleave them
+            const [movieRes, tvRes] = await Promise.all([
+                fetch(`${TMDB_BASE}/discover/movie?api_key=${TMDB_API_KEY}&language=en-US&page=${currentPage}&sort_by=${currentSort}${currentGenre ? `&with_genres=${currentGenre}` : ''}`),
+                fetch(`${TMDB_BASE}/discover/tv?api_key=${TMDB_API_KEY}&language=en-US&page=${currentPage}&sort_by=${currentSort}${currentGenre ? `&with_genres=${currentGenre}` : ''}`)
+            ]);
+            const movieData = await movieRes.json();
+            const tvData = await tvRes.json();
+
+            totalPages = Math.min(Math.max(movieData.total_pages, tvData.total_pages), 500);
+
+            // Tag each result so renderMovies knows which details page to link to
+            const taggedMovies = (movieData.results || []).map(m => ({ ...m, media_type: 'movie' }));
+            const taggedTV = (tvData.results || []).map(t => ({ ...t, media_type: 'tv', title: t.name, poster_path: t.poster_path }));
+
+            // Interleave: movie, tv, movie, tv...
+            results = taggedMovies.flatMap((m, i) => taggedTV[i] ? [m, taggedTV[i]] : [m]);
+
+        } else {
+            const endpoint = currentType === 'tv' ? 'tv' : 'movie';
+            const res = await fetch(`${TMDB_BASE}/discover/${endpoint}?api_key=${TMDB_API_KEY}&language=en-US&page=${currentPage}&sort_by=${currentSort}${currentGenre ? `&with_genres=${currentGenre}` : ''}`);
+            const data = await res.json();
+            totalPages = Math.min(data.total_pages, 500);
+            results = (data.results || []).map(m => ({
+                ...m,
+                media_type: currentType,
+                title: m.title || m.name  // TV uses 'name' not 'title'
+            }));
         }
 
-        const res = await fetch(url);
-        const data = await res.json();
-
-        totalPages = Math.min(data.total_pages, 500); // TMDB caps at 500 pages
-
-        renderMovies(data.results);
+        renderMovies(results);
         currentPage++;
 
     } catch (err) {
-        console.error('Failed to fetch movies:', err);
+        console.error('Failed to fetch:', err);
     } finally {
         isLoading = false;
         loader.style.display = 'none';
-
-        if (currentPage > totalPages) {
-            endMessage.style.display = 'block';
-        }
+        if (currentPage > totalPages) endMessage.style.display = 'block';
     }
 }
 
@@ -68,7 +87,7 @@ function renderMovies(movies) {
         if (!movie.poster_path) return; // skip movies without poster
 
         const link = document.createElement('a');
-        link.href = `/frontend/Movie_details/details.html?type=movie&id=${movie.id}`;
+        link.href = `/frontend/Movie_details/details.html?type=${movie.media_type}&id=${movie.id}`;
         link.style.textDecoration = 'none';
 
         const card = document.createElement('div');
@@ -121,6 +140,10 @@ genreFilter.addEventListener('change', () => {
 
 sortFilter.addEventListener('change', () => {
     currentSort = sortFilter.value;
+    resetAndReload();
+});
+document.getElementById('type-filter').addEventListener('change', (e) => {
+    currentType = e.target.value;
     resetAndReload();
 });
 

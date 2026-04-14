@@ -68,6 +68,25 @@ async function loadRecommendations() {
                 } else {
                     card.style.background = '#2a2a2a';
                 }
+                if (movie.match_score) {
+                    const badge = document.createElement('div');
+                    badge.innerText = `${movie.match_score}% Match`;
+                    badge.style.cssText = `
+                        position: absolute; 
+                        top: 10px; 
+                        right: 10px; 
+                        background-color: rgba(0, 0, 0, 0.8); /* Dark semi-transparent pill */
+                        color: #46d369; /* The classic 'High Confidence' Green */
+                        padding: 5px 10px; 
+                        border-radius: 6px; 
+                        font-size: 0.85rem; 
+                        font-weight: bold;
+                        z-index: 2; /* Keeps it above the image */
+                        box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+                        border: 1px solid rgba(70, 211, 105, 0.2); /* Slight green glow border */
+                    `;
+                    card.appendChild(badge);
+                }
 
                 // Title overlay at bottom
                 const overlay = document.createElement('div');

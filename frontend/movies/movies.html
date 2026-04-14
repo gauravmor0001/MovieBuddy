@@ -151,9 +151,9 @@
         </div>
         <div class="nav-links">
             <a href="/frontend/home/index.html">Home</a>
-            <a href="/frontend/movies/movies.html">Movies</a>
             <a href="/frontend/watchlist/watchlist.html">Watchlist</a>
             <a href="/frontend/for_you/foryou.html">For You</a>
+            <a href="/frontend/movies/movies.html">Mood</a>
             <a href="/frontend/match/matchmaker.html">Watch With Friend</a>
             <a href="/frontend/login_page/auth.html" id="nav-auth-btn" class="sign-in-btn">Sign In</a>
         </div>
@@ -164,6 +164,11 @@
     </div>
 
     <div class="filter-bar">
+        <select id="type-filter">
+            <option value="movie">Movies</option>
+            <option value="tv">Series</option>
+            <option value="both">Both</option>
+        </select>
         <select id="genre-filter">
             <option value="">All Genres</option>
             <option value="28">Action</option>
