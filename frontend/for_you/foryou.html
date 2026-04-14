@@ -23,28 +23,27 @@
             color: #e50914; /* Netflix red */
             margin-top: 50px;
         }
-        /* Assuming you have a grid class for your search results, we reuse it here */
         .movie-grid {
             display: grid;
-            /* Change this line to force exactly 3 equal columns */
             grid-template-columns: repeat(3, 1fr); 
-            gap: 30px; /* Slightly bigger gap so the larger cards breathe */
+            gap: 30px; 
             padding: 20px;
-            max-width: 1000px; /* Reduced max-width to keep posters from getting too massive */
+            max-width: 1000px; 
             margin: 0 auto;
         }
+        .movie-grid a {
+        display: block;
+        width: 100%;
+        text-decoration: none;
+    }
+
+    .movie-grid .search-card {
+        width: 100%;
+        height: auto;
+    }
     </style>
 </head>
 <body style="background-color: #121212; color: white; font-family: Arial, sans-serif;">
-
-    <!-- <nav style="padding: 20px; background-color: #1e1e1e; display: flex; justify-content: space-between; align-items: center;">
-        <h1 class="logo"><a href="/frontend/home/index.html" style="color:red; text-decoration:none;">MovieBuddy</a></h1>
-        <div>
-            <a href="/frontend/home/index.html" id="home-link">Home</a>
-            <a href="foryou.html" style="color: white; text-decoration: none; margin-right: 20px; font-weight: bold;">For You</a>
-            <a href="../login_page/auth.html" id="nav-auth-btn" style="color: white; text-decoration: none;">Login</a>
-        </div>
-    </nav> -->
 
     <nav class="navbar">
         <h1 class="logo"><a href="/frontend/home/index.html" style="color:red; text-decoration:none;">MovieBuddy</a></h1>
@@ -59,6 +58,7 @@
             <a href="/frontend/watchlist/watchlist.html">Watchlist</a>
             <a href="/frontend/for_you/foryou.html">For You</a>
             <a href="/frontend/match/matchmaker.html">watch with friend</a>
+            <a href="/frontend/movies/movies.html">Movies</a> 
             <a href="/frontend/login_page/auth.html" id="nav-auth-btn" class="sign-in-btn">Sign In</a> 
         </div>
     </nav>

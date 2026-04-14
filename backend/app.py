@@ -27,7 +27,7 @@ app.include_router(
 )
 app.include_router(recommend_router, tags=["Recommendations"])
 app.include_router(playlist.router, prefix="/api/playlists", tags=["Playlists"])
-app.include_router(chat_router,prefix="/api/chat", tags=["chat"])
+app.include_router(chat_router,prefix="/api", tags=["chatbot"])
 app.include_router(room_router, prefix="/api/room", tags=["Room"])
 
 

@@ -46,66 +46,43 @@ async function loadRecommendations() {
 
             data.recommendations.forEach(movie => {
                 const link = document.createElement('a');
-                // Pointing to your details page layout!
                 link.href = `/frontend/Movie_details/details.html?type=movie&id=${movie.movie_id}`;
                 link.style.textDecoration = 'none';
 
                 const card = document.createElement('div');
-                card.classList.add('search-card'); 
+                card.classList.add('search-card');
+                card.style.position = 'relative';
+                card.style.overflow = 'hidden';
+                card.style.borderRadius = '8px';
+                card.style.aspectRatio = '2/3';        // ← key fix: natural poster ratio
+                card.style.transition = 'transform 0.2s';
+                card.onmouseover = () => card.style.transform = 'scale(1.05)';
+                card.onmouseout = () => card.style.transform = 'scale(1)';
 
                 if (movie.poster_path) {
-                    // 1. Setup the card to hold the overlay
-                    card.style.position = "relative";
-                    card.style.overflow = "hidden"; // Keeps the gradient inside the rounded corners
-                    card.style.borderRadius = "8px";
-                    
-                    // 2. Create the image
                     const img = document.createElement('img');
-                    // Note: If you want horizontal images like your home page, you can change movie.poster_path to movie.backdrop_path here!
                     img.src = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
                     img.alt = movie.title;
-                    img.style.width = "100%";
-                    img.style.height = "100%";
-                    img.style.objectFit = "cover"; // Prevents stretching
-                    img.style.display = "block";
+                    img.style.cssText = 'width:100%; height:100%; object-fit:cover; display:block;';
                     card.appendChild(img);
-
-                    // 3. Create the dark gradient overlay wrapper
-                    const textOverlay = document.createElement('div');
-                    textOverlay.style.position = "absolute";
-                    textOverlay.style.bottom = "0";
-                    textOverlay.style.left = "0";
-                    textOverlay.style.width = "100%";
-                    // This creates the fade-to-black effect behind the text
-                    textOverlay.style.background = "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%)";
-                    textOverlay.style.padding = "30px 10px 10px 10px"; 
-                    textOverlay.style.boxSizing = "border-box";
-
-                    // 4. Create the title text
-                    const titleElement = document.createElement('h3');
-                    titleElement.innerText = movie.title;
-                    titleElement.style.color = "white";
-                    titleElement.style.textAlign = "center";
-                    titleElement.style.margin = "0";
-                    titleElement.style.fontSize = "1.1rem";
-                    titleElement.style.fontWeight = "bold";
-                    
-                    // 5. Attach everything together
-                    textOverlay.appendChild(titleElement);
-                    card.appendChild(textOverlay); 
-                    
-                    // Add the hover effect
-                    card.style.transition = "transform 0.2s";
-                    card.onmouseover = () => card.style.transform = "scale(1.05)";
-                    card.onmouseout = () => card.style.transform = "scale(1)";
-
                 } else {
-                    const infoDiv = document.createElement('div');
-                    infoDiv.classList.add('search-card-fallback');
-                    infoDiv.innerHTML = `<h3>${movie.title}</h3>`;
-                    card.appendChild(infoDiv);
+                    card.style.background = '#2a2a2a';
                 }
 
+                // Title overlay at bottom
+                const overlay = document.createElement('div');
+                overlay.style.cssText = `
+                    position: absolute; bottom: 0; left: 0; width: 100%;
+                    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+                    padding: 30px 10px 10px 10px; box-sizing: border-box;
+                `;
+
+                const title = document.createElement('h3');
+                title.innerText = movie.title;
+                title.style.cssText = 'color:white; text-align:center; margin:0; font-size:1rem; font-weight:bold;';
+
+                overlay.appendChild(title);
+                card.appendChild(overlay);
                 link.appendChild(card);
                 recommendationsContainer.appendChild(link);
             });
@@ -116,5 +93,4 @@ async function loadRecommendations() {
     }
 }
 
-// Fire the engine when the page loads!
 loadRecommendations();

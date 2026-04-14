@@ -164,23 +164,31 @@ async def room_websocket(room_id: str, websocket: WebSocket, token: str):
     })
 
     try:
-        if current_count == 2:
+        if current_count >= 2 and room.get("guest") is not None:
             await manager.broadcast(room_id, {
                 "event": "both_connected",
                 "message": "Both connected! Finding your perfect match..."
             })
-
-            recommendations = await calculate_midpoint_recommendations(room)
-
-            await manager.broadcast(room_id, {
-                "event": "recommendations_ready",
-                "recommendations": recommendations
-            })
-
-            await db.rooms.update_one(
-                {"room_id": room_id},
-                {"$set": {"status": "done"}}
-            )
+            try:
+                recommendations = await calculate_midpoint_recommendations(room)
+                await manager.broadcast(room_id, {
+                    "event": "recommendations_ready",
+                    "recommendations": recommendations
+                })
+                await db.rooms.update_one(
+                    {"room_id": room_id},
+                    {"$set": {"status": "done"}}
+                )
+            except Exception as e:
+                print(f"ERROR in calculate_midpoint_recommendations: {e}")
+                await manager.broadcast(room_id, {
+                    "event": "error",
+                    "message": str(e)
+                })
+                await db.rooms.update_one(
+                        {"room_id": room_id},
+                        {"$set": {"status": "done"}}
+                )
 
         while True:
             await websocket.receive_text()

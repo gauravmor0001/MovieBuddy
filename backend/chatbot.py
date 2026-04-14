@@ -25,7 +25,7 @@ class MessageItem(BaseModel):
 class ChatRequest(BaseModel):
     messages: List[MessageItem]
 
-@router.post("/api/chat")
+@router.post("/chat")
 async def chat_with_bot(request: ChatRequest):
     # Grab the latest message
     latest_user_msg = request.messages[-1].content
