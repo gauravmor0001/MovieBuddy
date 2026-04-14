@@ -52,6 +52,12 @@
     font-weight: bold;
     cursor: pointer;
     transition: all 0.2s ease;
+    height: 48px;
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    
 }
 .simple-watchlist-btn:hover {
     background-color: #e50914; /* Fills in with red when hovered */

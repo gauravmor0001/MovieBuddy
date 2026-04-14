@@ -355,3 +355,37 @@ async function saveMovieToPlaylist(playlistId) {
         console.error("Error saving:", error);
     }
 }
+
+// ==========================================
+// "WHY SHOULD I WATCH THIS?" AI BUTTON
+// ==========================================
+const whyWatchBtn = document.getElementById('why-watch-btn');
+
+if (whyWatchBtn) {
+    whyWatchBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        // 1. Grab the movie/show title from the page
+        const title = document.getElementById('page-title').innerText;
+        
+        // 2. Find the chat widget elements
+        const chatPopup = document.getElementById('chat-popup');
+        const userInput = document.getElementById('user-input');
+        
+        if (chatPopup && userInput) {
+            // 3. Open the chat window
+            chatPopup.classList.remove('hidden');
+            
+            // 4. Type the message into the chat box
+            userInput.value = `Why should I watch ${title}?`;
+            
+            // 5. Trigger the existing sendMessage function from your chat.js!
+            if (typeof sendMessage === 'function') {
+                sendMessage();
+            } else {
+                console.error("sendMessage function not found. Make sure chat.js is loaded!");
+            }
+        } else {
+            console.error("Chat widget not found on this page. Did you add the chatbot HTML to details.html?");
+        }
+    });
+}
