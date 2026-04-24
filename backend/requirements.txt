@@ -10,3 +10,4 @@ websockets
 PyJWT
 passlib[bcrypt]
 python-multipart
+email-validator
