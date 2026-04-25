@@ -3,6 +3,7 @@ uvicorn[standard]
 motor
 pymongo
 groq
+sentence-transformers
 python-dotenv
 numpy
 websockets
@@ -10,4 +11,3 @@ PyJWT
 passlib[bcrypt]
 python-multipart
 email-validator
-httpx

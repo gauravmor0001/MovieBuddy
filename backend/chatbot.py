@@ -3,7 +3,8 @@ from groq import Groq
 from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from sentence_transformers import SentenceTransformer
+# from sentence_transformers import SentenceTransformer
+import httpx
 from database import db
 from typing import List
 
@@ -14,9 +15,29 @@ router = APIRouter()
 TMDB_API_KEY = os.getenv("API_KEY")
 MONGO_URI = os.getenv("Mongo")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+HF_TOKEN = os.getenv("HF_TOKEN")
 groq_client = Groq(api_key=GROQ_API_KEY)
 
-embed_model = SentenceTransformer('all-MiniLM-L6-v2')
+# embed_model = SentenceTransformer('all-MiniLM-L6-v2')
+HF_API_URL = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2"
+
+async def get_embedding(text: str):
+    """Fetches the 384-dimensional vector from Hugging Face's free API instead of local RAM."""
+    headers = {"Authorization": f"Bearer {HF_TOKEN}"}
+    
+    async with httpx.AsyncClient() as client:
+        response = await client.post(HF_API_URL, headers=headers, json={"inputs": [text]})
+        
+        if response.status_code != 200:
+            print(f"Hugging Face API Error: {response.text}")
+            return []
+            
+        data = response.json()
+        
+        # Hugging Face returns a nested list (e.g., [[0.12, 0.54, ...]]), so we grab the first item
+        if isinstance(data, list) and len(data) > 0 and isinstance(data[0], list):
+            return data[0]
+        return data
 
 async def classify_intent(user_message: str, chat_history: str = "") -> str:
     """
@@ -127,7 +148,7 @@ async def chat_with_bot(request: ChatRequest):
             optimized_query = opt_completion.choices[0].message.content.strip()
             print(f"Optimized Vector Query: {optimized_query}")
 
-            user_vector = embed_model.encode(optimized_query).tolist()
+            user_vector = await get_embedding(optimized_query)
 
             pipeline = [
                 {
