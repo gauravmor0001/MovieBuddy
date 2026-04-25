@@ -8,6 +8,7 @@ from chatbot import router as chat_router
 from recommend import router as recommend_router 
 from room import router as room_router
 import os
+from fastapi.responses import Response
 app = FastAPI(title="MovieBuddy API")
 
 origins = [
@@ -25,6 +26,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.api_route("/", methods=["GET", "HEAD"])
+async def home():
+    return {"message": "MovieBuddy Backend is running!"}
 app.include_router(auth_router, prefix="/api", tags=["Authentication"])
 app.include_router(
     watchlist_router, 
