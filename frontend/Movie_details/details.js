@@ -265,7 +265,7 @@ if (saveBtn) {
         playlistOptionsContainer.innerHTML = '<p style="text-align: center; color: #aaa;">Loading...</p>';
 
         try {
-            const response = await fetch('http://localhost:8000/api/playlists/', {
+            const response = await fetch('https://moviebuddy-whxl.onrender.com/api/playlists/', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -333,7 +333,7 @@ async function saveMovieToPlaylist(playlistId) {
     };
 
     try {
-        const response = await fetch('http://localhost:8000/api/watchlist/add', {
+        const response = await fetch('https://moviebuddy-whxl.onrender.com/api/watchlist/add', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

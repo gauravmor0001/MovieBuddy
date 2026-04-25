@@ -21,7 +21,7 @@ async function loadRecommendations() {
     }
 
     try {
-        const response = await fetch('http://localhost:8000/api/recommend', {
+        const response = await fetch('https://moviebuddy-whxl.onrender.com/api/recommend', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`

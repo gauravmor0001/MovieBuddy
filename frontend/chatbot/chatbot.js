@@ -73,7 +73,7 @@ async function sendMessage() {
     chatHistory.push({ role: "user", content: text });
 
     try {
-        const response = await fetch('http://localhost:8000/api/chat', {
+        const response = await fetch('https://moviebuddy-whxl.onrender.com/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ messages: chatHistory })

@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const API_KEY = CONFIG.API_KEY; 
-    const BACKEND_URL = 'http://localhost:8000/api';
+    const BACKEND_URL = 'https://moviebuddy-whxl.onrender.com/api';
     const TMDB_BACKDROP_URL = 'https://image.tmdb.org/t/p/w780';
     // const TMDB_POSTER_URL = 'https://image.tmdb.org/t/p/w500'; 
     const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
