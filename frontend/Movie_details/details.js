@@ -1,4 +1,14 @@
-const API_KEY = CONFIG.API_KEY; 
+let CONFIG={}
+try {
+        const response = await fetch('https://your-render-url-here.onrender.com/api/config');
+        const data = await response.json();
+        CONFIG.API_KEY = data.TMDB_API_KEY;
+        
+    } catch (error) {
+        console.error("Failed to load secure config:", error);
+    }
+
+const API_KEY=CONFIG.API_KEY
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/original'; 
 const POSTER_BASE_URL = 'https://image.tmdb.org/t/p/w500';

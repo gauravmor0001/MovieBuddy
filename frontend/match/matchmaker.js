@@ -104,7 +104,7 @@ async function initRoom() {
 
     if (!roomId) {
         try {
-            const res = await fetch('http://127.0.0.1:8000/api/room/create', {
+            const res = await fetch('https://moviebuddy-whxl.onrender.com/api/room/create', {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -132,7 +132,7 @@ async function initRoom() {
     startCountdown();
 
     // 4. Open WebSocket connection with the real room_id
-    const wsUrl = `ws://127.0.0.1:8000/api/room/ws/${roomId}?token=${token}`;
+    const wsUrl = `wss://moviebuddy-whxl.onrender.com/api/room/ws/${roomId}?token=${token}`
     const ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {

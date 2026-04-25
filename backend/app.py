@@ -7,12 +7,14 @@ import playlist
 from chatbot import router as chat_router 
 from recommend import router as recommend_router 
 from room import router as room_router
+import os
 app = FastAPI(title="MovieBuddy API")
 
 origins = [
     "http://localhost:5500", 
     "http://127.0.0.1:5500",
-    "https://gauravmor0001.github.io/MovieBuddy/"
+    "https://gauravmor0001.github.io",
+    "http://127.0.0.1:5501"
 ]
 
 app.add_middleware(
@@ -47,3 +49,13 @@ async def vip_lounge(current_user: dict = Depends(get_current_user)):
         "message": f"Welcome to the VIP area, {current_user['username']}!",
         "your_database_id": str(current_user['_id'])
     }
+
+@app.get("/api/config")
+async def get_config():
+    """Securely passes the TMDB key from Render to the frontend"""
+    tmdb_key = os.getenv("API_KEY")
+    
+    if not tmdb_key:
+        return {"error": "API key not found on server"}
+        
+    return {"TMDB_API_KEY": tmdb_key}

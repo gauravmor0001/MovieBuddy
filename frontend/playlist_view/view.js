@@ -1,5 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const API_KEY = CONFIG.API_KEY; 
+    let CONFIG={}
+    try {
+            const response = await fetch('https://your-render-url-here.onrender.com/api/config');
+            const data = await response.json();
+            CONFIG.API_KEY = data.TMDB_API_KEY;
+            
+        } catch (error) {
+            console.error("Failed to load secure config:", error);
+        }
+
+    const API_KEY=CONFIG.API_KEY
     const BACKEND_URL = 'https://moviebuddy-whxl.onrender.com/api';
     const TMDB_BACKDROP_URL = 'https://image.tmdb.org/t/p/w780';
     // const TMDB_POSTER_URL = 'https://image.tmdb.org/t/p/w500'; 

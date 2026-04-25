@@ -13,7 +13,7 @@ showLoginBtn.addEventListener('click', () => {
     loginSection.style.display = 'block';
 });
 
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+const API_BASE_URL = 'https://moviebuddy-whxl.onrender.com/api';
 
 document.getElementById('register-form').addEventListener('submit', async (e) => {
     e.preventDefault(); // Stops the page from refreshing
