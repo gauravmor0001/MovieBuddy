@@ -49,7 +49,7 @@ function appendMoviesToMessage(msgElement, movies) {
     movies.forEach(movie => {
         if (movie.poster_path) {
             const link = document.createElement('a');
-            link.href = `/frontend/Movie_details/details.html?type=movie&id=${movie.movie_id}`;
+            link.href = `/MovieBuddy/frontend/Movie_details/details.html?type=movie&id=${movie.movie_id}`;
             link.target = "_blank"; 
             const img = document.createElement('img');
             img.src = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;

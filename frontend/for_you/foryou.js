@@ -46,7 +46,7 @@ async function loadRecommendations() {
 
             data.recommendations.forEach(movie => {
                 const link = document.createElement('a');
-                link.href = `/frontend/Movie_details/details.html?type=movie&id=${movie.movie_id}`;
+                link.href = `/MovieBuddy/frontend/Movie_details/details.html?type=movie&id=${movie.movie_id}`;
                 link.style.textDecoration = 'none';
 
                 const card = document.createElement('div');

@@ -84,3 +84,4 @@ display:block (takes the entire line)
 ->navigator.clipboard.writeText(link) (copy to clipboard)
 ->to get anything from the localStorage we can use localStorage.getItem('name'),to delete anything from localStorage use localStorage.removeItem('name')
 ->const urlParams = new URLSearchParams(window.location.search); gets the query string part of the URL eg "?token=xyz&user=gaurav"
+->the absolute paths that works on the laptop does not work on github pages as <link rel="stylesheet" href="/MovieBuddy/frontend/home/style.css">here the first "/" tell browser to go to root directory which in laptop is the project folder but in github pages it is https://your-username.github.io/.

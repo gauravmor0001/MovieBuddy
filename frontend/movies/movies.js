@@ -25,7 +25,7 @@ if (token && authBtn) {
         e.preventDefault();
         localStorage.removeItem('moviebuddy_token');
         localStorage.removeItem('moviebuddy_username');
-        window.location.href = '/frontend/login_page/auth.html';
+        window.location.href = '/MovieBuddy/frontend/login_page/auth.html';
     });
 }
 
@@ -87,7 +87,7 @@ function renderMovies(movies) {
         if (!movie.poster_path) return; // skip movies without poster
 
         const link = document.createElement('a');
-        link.href = `/frontend/Movie_details/details.html?type=${movie.media_type}&id=${movie.id}`;
+        link.href = `/MovieBuddy/frontend/Movie_details/details.html?type=${movie.media_type}&id=${movie.id}`;
         link.style.textDecoration = 'none';
 
         const card = document.createElement('div');

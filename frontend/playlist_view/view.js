@@ -24,13 +24,13 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('moviebuddy_username');
             
             // Kick them back to the home page (or login page)
-            window.location.href = '/frontend/login_page/auth.html'; 
+            window.location.href = '/MovieBuddy/frontend/login_page/auth.html'; 
         });
     }
     
     // If they aren't logged in, kick them out!
     if (!token) {
-        window.location.href = '/frontend/login_page/auth.html';
+        window.location.href = '/MovieBuddy/frontend/login_page/auth.html';
         return;
     }
 
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const year = releaseDate ? releaseDate.split('-')[0] : 'Unknown';
 
                 const link = document.createElement('a');
-                link.href = `/frontend/Movie_details/details.html?type=${encodeURIComponent(item.media_type)}&id=${encodeURIComponent(item.id)}`;
+                link.href = `/MovieBuddy/frontend/Movie_details/details.html?type=${encodeURIComponent(item.media_type)}&id=${encodeURIComponent(item.id)}`;
                 link.style.textDecoration = 'none'; 
 
                 const card = document.createElement('div');

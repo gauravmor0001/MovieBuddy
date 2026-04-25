@@ -16,7 +16,7 @@ async function fetchAndDisplayMovies(endpoint,containerId){
             if (movie.backdrop_path) {
                 const mediaType = movie.media_type || (endpoint.startsWith('/tv') ? 'tv' : 'movie');
                 const link = document.createElement('a');
-                link.href = '/frontend/Movie_details/details.html?type=' + encodeURIComponent(mediaType) + '&id=' + encodeURIComponent(movie.id);
+                link.href = '/MovieBuddy/frontend/Movie_details/details.html?type=' + encodeURIComponent(mediaType) + '&id=' + encodeURIComponent(movie.id);
                 link.classList.add('movie-card-link');
 
                 const card = document.createElement('div');
@@ -120,7 +120,7 @@ async function searchMedia(query) {
             const year = releaseDate ? releaseDate.split('-')[0] : 'Unknown';
 
             const link = document.createElement('a');
-            link.href = `/frontend/Movie_details/details.html?type=${encodeURIComponent(item.media_type)}&id=${encodeURIComponent(item.id)}`;
+            link.href = `/MovieBuddy/frontend/Movie_details/details.html?type=${encodeURIComponent(item.media_type)}&id=${encodeURIComponent(item.id)}`;
             link.style.textDecoration = 'none'; // Prevent links from turning text blue
 
             const card = document.createElement('div');
@@ -195,13 +195,13 @@ const token = localStorage.getItem('moviebuddy_token');
             localStorage.removeItem('moviebuddy_username');
             
             // Kick them back to the home page (or login page)
-            window.location.href = '/frontend/login_page/auth.html'; 
+            window.location.href = '/MovieBuddy/frontend/login_page/auth.html'; 
         });
     }
 
 const info_button=document.getElementById('info-button');
 info_button.addEventListener('click', () => {
-    window.location.href=`/frontend/Movie_details/details.html?type=${encodeURIComponent(infomediatype)}&id=${encodeURIComponent(infomovieid)}`;
+    window.location.href=`/MovieBuddy/frontend/Movie_details/details.html?type=${encodeURIComponent(infomediatype)}&id=${encodeURIComponent(infomovieid)}`;
 });
 
 

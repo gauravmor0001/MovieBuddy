@@ -171,7 +171,7 @@ async function searchMedia(query) {
             const year = releaseDate ? releaseDate.split('-')[0] : 'Unknown';
 
             const link = document.createElement('a');
-            link.href = `/frontend/Movie_details/details.html?type=${encodeURIComponent(item.media_type)}&id=${encodeURIComponent(item.id)}`;
+            link.href = `/MovieBuddy/frontend/Movie_details/details.html?type=${encodeURIComponent(item.media_type)}&id=${encodeURIComponent(item.id)}`;
             link.style.textDecoration = 'none'; // Prevent links from turning text blue
 
             const card = document.createElement('div');
@@ -242,7 +242,7 @@ if (token) {
         localStorage.removeItem('moviebuddy_username');
         
         // Kick them back to the home page (or login page)
-        window.location.href = '/frontend/login_page/auth.html'; 
+        window.location.href = '/MovieBuddy/frontend/login_page/auth.html'; 
     });
 }
 
@@ -257,7 +257,7 @@ if (saveBtn) {
         const token = localStorage.getItem('moviebuddy_token');
         if (!token) {
             alert("Please sign in to save movies!");
-            window.location.href = '/frontend/login_page/auth.html';
+            window.location.href = '/MovieBuddy/frontend/login_page/auth.html';
             return;
         }
 
