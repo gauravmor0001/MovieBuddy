@@ -1,47 +1,42 @@
-document.addEventListener('DOMContentLoaded', () => {
+// ✅ Added 'async' right here so we can use await inside!
+document.addEventListener('DOMContentLoaded', async () => {
     const BACKEND_URL = 'https://moviebuddy-whxl.onrender.com/api'; 
     const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
     const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
-    let CONFIG={}
+    
+    // 1. Fetch the key using your global cached function!
+    let API_KEY = "";
     try {
-            const response = await fetch('https://your-render-url-here.onrender.com/api/config');
-            const data = await response.json();
-            CONFIG.API_KEY = data.TMDB_API_KEY;
-            
-        } catch (error) {
-            console.error("Failed to load secure config:", error);
-        }
-
-    const API_KEY=CONFIG.API_KEY
-
-    const token = localStorage.getItem('moviebuddy_token');
-
-    const authBtn = document.getElementById('nav-auth-btn');
-    
-    if (token) {
-        authBtn.innerText = "Logout";
-        // 2. Stop it from going to auth.html
-        authBtn.href = "#"; 
-        
-
-        authBtn.addEventListener('click', (e) => {
-            e.preventDefault(); // Stop the link from jumping the page
-            
-            // Delete the VIP wristbands from memory
-            localStorage.removeItem('moviebuddy_token');
-            localStorage.removeItem('moviebuddy_username');
-            
-            // Kick them back to the home page (or login page)
-            window.location.href = '/MovieBuddy/frontend/login_page/auth.html'; 
-        });
+        API_KEY = await getTMDBKey();
+    } catch (error) {
+        console.error("Failed to load TMDB key:", error);
     }
+
+    // 2. Auth Logic
+    const token = localStorage.getItem('moviebuddy_token');
     
-    // If they aren't logged in, kick them out!
+    // If they aren't logged in, kick them out immediately
     if (!token) {
         window.location.href = '/MovieBuddy/frontend/login_page/auth.html';
         return;
     }
 
+    const authBtn = document.getElementById('nav-auth-btn');
+    if (authBtn) {
+        authBtn.innerText = "Logout";
+        authBtn.href = "#"; 
+        
+        authBtn.addEventListener('click', (e) => {
+            e.preventDefault(); 
+            localStorage.removeItem('moviebuddy_token');
+            localStorage.removeItem('moviebuddy_username');
+            window.location.href = '/MovieBuddy/frontend/login_page/auth.html'; 
+        });
+    }
+
+    // ==========================================
+    // 3. SEARCH UI LOGIC
+    // ==========================================
     const searchinput = document.getElementById('searchinput');
     const searchbutton = document.getElementById('searchbutton');
     const searchSection = document.getElementById('search-section');
@@ -55,9 +50,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(url);
             const data = await response.json();
 
-            searchSection.style.display = 'block'; // Unhide the search section!
-            searchHeading.innerText = `Search Results for "${query}"`;
-            searchResultsContainer.innerHTML = '';
+            if (searchSection) searchSection.style.display = 'block'; 
+            if (searchHeading) searchHeading.innerText = `Search Results for "${query}"`;
+            if (searchResultsContainer) searchResultsContainer.innerHTML = '';
             
             data.results.forEach(item => {
                 if (item.media_type === 'person') return;
@@ -90,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 link.appendChild(card);
-                searchResultsContainer.appendChild(link);
+                if (searchResultsContainer) searchResultsContainer.appendChild(link);
             });
             
         } catch (error) {
@@ -98,26 +93,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    searchbutton.addEventListener('click', () => {
-        const searchTerm = searchinput.value.trim();
-        if (searchTerm) {
-            searchMedia(searchTerm);
-            searchinput.value = "";
-        }
-    });
-
-    searchinput.addEventListener('keypress', (event) => {
-        if (event.key === 'Enter') {
+    // ✅ Added safety checks so the page doesn't crash if the search bar is missing
+    if (searchbutton && searchinput) {
+        searchbutton.addEventListener('click', () => {
             const searchTerm = searchinput.value.trim();
             if (searchTerm) {
                 searchMedia(searchTerm);
                 searchinput.value = "";
             }
-        }
-    });
+        });
+
+        searchinput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                const searchTerm = searchinput.value.trim();
+                if (searchTerm) {
+                    searchMedia(searchTerm);
+                    searchinput.value = "";
+                }
+            }
+        });
+    }
 
     // ==========================================
-    // 3. PLAYLIST FETCHING & UI LOGIC
+    // 4. PLAYLIST FETCHING & UI LOGIC
     // ==========================================
     const container = document.getElementById('playlists-container');
     const modal = document.getElementById('create-modal');
@@ -145,19 +143,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Draw the YouTube-style grid
     function renderGrid(playlists) {
+        if (!container) return;
         container.innerHTML = ''; 
 
-        // 1. Draw the "+ New Playlist" card first
+        // Draw the "+ New Playlist" card first
         const createCard = document.createElement('div');
         createCard.classList.add('playlist-card', 'create-card');
         createCard.innerHTML = `<h3>+ New Playlist</h3>`;
         createCard.addEventListener('click', () => {
-            modal.classList.remove('hidden'); 
-            nameInput.focus();
+            if(modal) modal.classList.remove('hidden'); 
+            if(nameInput) nameInput.focus();
         });
         container.appendChild(createCard);
 
-        // 2. Loop through backend data and draw the rest
+        // Loop through backend data and draw the rest
         playlists.forEach(pl => {
             const card = document.createElement('a');
             card.href = `/MovieBuddy/frontend/playlist_view/view.html?id=${pl._id}`;
@@ -173,40 +172,46 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
-    // 4. MODAL EVENT LISTENERS
+    // 5. MODAL EVENT LISTENERS
     // ==========================================
-    cancelBtn.addEventListener('click', () => {
-        modal.classList.add('hidden');
-        nameInput.value = ''; 
-    });
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            nameInput.value = ''; 
+        });
+    }
 
-    confirmBtn.addEventListener('click', async () => {
-        const newName = nameInput.value.trim();
-        if (!newName) return;
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', async () => {
+            const newName = nameInput.value.trim();
+            if (!newName) return;
 
-        try {
-            const response = await fetch(`${BACKEND_URL}/playlists/create`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ name: newName })
-            });
+            try {
+                const response = await fetch(`${BACKEND_URL}/playlists/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ name: newName })
+                });
 
-            if (response.ok) {
-                modal.classList.add('hidden');
-                nameInput.value = '';
-                loadPlaylists(); // Refresh grid to show the new folder!
-            } else {
-                const errorData = await response.json();
-                alert(errorData.detail || "Failed to create playlist.");
+                if (response.ok) {
+                    modal.classList.add('hidden');
+                    nameInput.value = '';
+                    loadPlaylists(); // Refresh grid to show the new folder!
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.detail || "Failed to create playlist.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
             }
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    });
+        });
+    }
 
     // Boot up the page!
-    loadPlaylists();
+    if(container) {
+        loadPlaylists();
+    }
 });

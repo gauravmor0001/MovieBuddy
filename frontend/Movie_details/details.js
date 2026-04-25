@@ -1,24 +1,39 @@
-let CONFIG={}
-try {
-        const response = await fetch('https://your-render-url-here.onrender.com/api/config');
-        const data = await response.json();
-        CONFIG.API_KEY = data.TMDB_API_KEY;
-        
-    } catch (error) {
-        console.error("Failed to load secure config:", error);
-    }
-
-const API_KEY=CONFIG.API_KEY
+// 1. Declare variables globally
+let API_KEY = "";
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/original'; 
 const POSTER_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
 let currentMoviePoster = null;
 
-// This built-in JS tool reads the web address (e.g., ?type=movie&id=27205)
+// Read the web address (e.g., ?type=movie&id=27205)
 const urlParams = new URLSearchParams(window.location.search);
-const mediaType = urlParams.get('type'); // Grabs "movie" or "tv"
+const mediaType = urlParams.get('type'); 
 const mediaId = urlParams.get('id');
+
+// 2. The Startup Wrapper
+async function initializePage() {
+    try {
+        // Instantly grab the key from your browser cache!
+        API_KEY = await getTMDBKey();
+        
+        // NOW try to build the page
+        if (mediaId && mediaType) {
+            await buildDetailsPage();
+        } else {
+            document.getElementById('details-title').innerText = "Movie not found!";
+        }
+    } catch (error) {
+        console.error("Failed to load TMDB key:", error);
+    }
+}
+
+// 3. Kick off the application
+initializePage();
+
+// ==========================================
+// CORE FUNCTIONS
+// ==========================================
 
 async function buildDetailsPage() {
     try {
@@ -62,7 +77,6 @@ async function buildDetailsPage() {
         const fullDate = data.release_date || data.first_air_date;
         const releaseYear = fullDate ? fullDate.substring(0, 4) : "N/A";
 
-       
         let genreText = "Unknown Genre";
         if (data.genres && data.genres.length > 0) {
             genreText = data.genres.map(g => g.name).join(', ');
@@ -90,19 +104,16 @@ async function buildDetailsPage() {
 
 
         const providersContainer = document.getElementById('watch-providers');
-        // 'US' to 'IN' 
         const providersData = data['watch/providers']?.results?.US;
 
         if (providersData && providersData.flatrate) {
             providersContainer.innerHTML = ''; 
             
-
             providersData.flatrate.forEach(provider => {
                 const img = document.createElement('img');
-                // We use POSTER_BASE_URL to get a nicely sized image
                 img.src = `${POSTER_BASE_URL}${provider.logo_path}`; 
                 img.alt = provider.provider_name;
-                img.title = provider.provider_name; // Shows the name when the user hovers over it
+                img.title = provider.provider_name; 
                 img.classList.add('provider-logo');
                 
                 providersContainer.appendChild(img);
@@ -116,11 +127,9 @@ async function buildDetailsPage() {
         
         if (data.credits && data.credits.cast && data.credits.cast.length > 0) {
             castContainer.innerHTML = ''; 
-
             const topCast = data.credits.cast.slice(0, 9);
 
             topCast.forEach(actor => {
-                // If the actor doesn't have a photo in the TMDB database, we use a placeholder image
                 const photoUrl = actor.profile_path 
                     ? `${POSTER_BASE_URL}${actor.profile_path}` 
                     : 'https://via.placeholder.com/80x80/222222/cccccc?text=No+Photo';
@@ -148,21 +157,18 @@ async function buildDetailsPage() {
     }
 }
 
-if (mediaId && mediaType) {
-    buildDetailsPage();
-} else {
-    document.getElementById('details-title').innerText = "Movie not found!";
-}
-
-// search code:
+// ==========================================
+// SEARCH LOGIC
+// ==========================================
 const searchInput = document.getElementById('search-input');
 const searchBtn = document.getElementById('search-btn');
-
+const searchSection = document.getElementById('search-section');
+const searchResultsContainer = document.getElementById('search-results');
+const searchHeading = document.getElementById('search-heading');
 
 async function searchMedia(query) {
     try{
         const url = `${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`;
-        
         const response = await fetch(url);
         const data = await response.json();
 
@@ -171,32 +177,26 @@ async function searchMedia(query) {
         searchResultsContainer.innerHTML = '';
         
         data.results.forEach(item => {
-            // Multi-search also returns actors. Let's skip people for now.
             if (item.media_type === 'person') return;
 
-            // 2. Handle TMDB's naming quirks (Movies use title, TV uses name)
             const title = item.title || item.name;
             const releaseDate = item.release_date || item.first_air_date;
-            // Extract just the year (e.g., "2015-04-10" becomes "2015")
             const year = releaseDate ? releaseDate.split('-')[0] : 'Unknown';
 
             const link = document.createElement('a');
             link.href = `/MovieBuddy/frontend/Movie_details/details.html?type=${encodeURIComponent(item.media_type)}&id=${encodeURIComponent(item.id)}`;
-            link.style.textDecoration = 'none'; // Prevent links from turning text blue
+            link.style.textDecoration = 'none'; 
 
             const card = document.createElement('div');
             card.classList.add('search-card');
 
-            // 3. The Visual Logic: Poster vs. Text Fallback
             if (item.poster_path || item.backdrop_path) {
-                // If they have an image, show the image
                 const imagePath = item.backdrop_path ? item.backdrop_path : item.poster_path;
                 const img = document.createElement('img');
                 img.src = `${IMAGE_BASE_URL}${imagePath}`;
                 img.alt = title;
                 card.appendChild(img);
             } else {
-                // If NO image, create the dark box with text like your screenshot
                 const infoDiv = document.createElement('div');
                 infoDiv.classList.add('search-card-fallback');
                 infoDiv.innerHTML = `
@@ -215,43 +215,41 @@ async function searchMedia(query) {
     }
 }
 
-searchbutton.addEventListener('click', () => {
-    const searchTerm = searchinput.value;
-    if (searchTerm) {
-        searchMedia(searchTerm);
-        searchinput.value="";
-    }
-});
-
-searchinput.addEventListener('keypress', (event) => {
-    if (event.key === 'Enter') {
-        const searchTerm = searchinput.value;
+if(searchBtn) {
+    searchBtn.addEventListener('click', () => {
+        const searchTerm = searchInput.value;
         if (searchTerm) {
             searchMedia(searchTerm);
-            searchinput.value="";
+            searchInput.value="";
         }
-    }
-});
+    });
+}
 
-const searchSection = document.getElementById('search-section');
-const searchResultsContainer = document.getElementById('search-results');
-const searchHeading = document.getElementById('search-heading');
+if(searchInput) {
+    searchInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            const searchTerm = searchInput.value;
+            if (searchTerm) {
+                searchMedia(searchTerm);
+                searchInput.value="";
+            }
+        }
+    });
+}
 
-
+// ==========================================
+// AUTH & WATCHLIST LOGIC
+// ==========================================
 const token = localStorage.getItem('moviebuddy_token');
 const authBtn = document.getElementById('nav-auth-btn');
-if (token) {
+
+if (token && authBtn) {
     authBtn.innerText = "Logout";
-    // 2. Stop it from going to auth.html
-    authBtn.href = "#"; //we first want to remove the web token so we stop its ablity to go.
+    authBtn.href = "#"; 
     authBtn.addEventListener('click', (e) => {
-        e.preventDefault(); // Stop the link from jumping the page
-        
-        // Delete the VIP wristbands from memory
+        e.preventDefault(); 
         localStorage.removeItem('moviebuddy_token');
         localStorage.removeItem('moviebuddy_username');
-        
-        // Kick them back to the home page (or login page)
         window.location.href = '/MovieBuddy/frontend/login_page/auth.html'; 
     });
 }
@@ -261,22 +259,21 @@ const saveModal = document.getElementById('save-modal');
 const closeSaveModalBtn = document.getElementById('close-save-modal');
 const playlistOptionsContainer = document.getElementById('playlist-options-container');
 
-// 1. OPEN MODAL & FETCH PLAYLISTS
 if (saveBtn) {
     saveBtn.addEventListener('click', async () => {
-        const token = localStorage.getItem('moviebuddy_token');
-        if (!token) {
+        const currentToken = localStorage.getItem('moviebuddy_token');
+        if (!currentToken) {
             alert("Please sign in to save movies!");
             window.location.href = '/MovieBuddy/frontend/login_page/auth.html';
             return;
         }
 
-        saveModal.classList.remove('hidden'); // Show the popup
+        saveModal.classList.remove('hidden'); 
         playlistOptionsContainer.innerHTML = '<p style="text-align: center; color: #aaa;">Loading...</p>';
 
         try {
             const response = await fetch('https://moviebuddy-whxl.onrender.com/api/playlists/', {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 'Authorization': `Bearer ${currentToken}` }
             });
 
             if (response.ok) {
@@ -291,19 +288,22 @@ if (saveBtn) {
     });
 }
 
-closeSaveModalBtn.addEventListener('click', () => {
-    saveModal.classList.add('hidden');
-});
-//Close if they click the dark background outside the box
-saveModal.addEventListener('click', (e) => {
-    if (e.target === saveModal) {
+if (closeSaveModalBtn) {
+    closeSaveModalBtn.addEventListener('click', () => {
         saveModal.classList.add('hidden');
-    }
-});
+    });
+}
 
-// 3. DRAW THE PLAYLIST ROWS
+if (saveModal) {
+    saveModal.addEventListener('click', (e) => {
+        if (e.target === saveModal) {
+            saveModal.classList.add('hidden');
+        }
+    });
+}
+
 function renderPlaylistOptions(playlists) {
-    playlistOptionsContainer.innerHTML = ''; // Clear loading text
+    playlistOptionsContainer.innerHTML = ''; 
 
     playlists.forEach(pl => {
         const row = document.createElement('div');
@@ -316,26 +316,18 @@ function renderPlaylistOptions(playlists) {
             </div>
         `;
 
-        // 4. WHEN THEY CLICK A PLAYLIST, SAVE THE MOVIE!
         row.addEventListener('click', () => saveMovieToPlaylist(pl._id));
-
         playlistOptionsContainer.appendChild(row);
     });
 }
 
-// 5. THE FINAL API CALL TO SAVE
 async function saveMovieToPlaylist(playlistId) {
-    const token = localStorage.getItem('moviebuddy_token');
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    const movieId = urlParams.get('id');
-    const mediaType = urlParams.get('type') || 'movie';
-    
-    const movieTitle = document.getElementById('page-title').innerText; // Example
+    const currentToken = localStorage.getItem('moviebuddy_token');
+    const movieTitle = document.getElementById('page-title').innerText; 
     const posterPath = currentMoviePoster;
 
     const payload = {
-        movie_id: parseInt(movieId),
+        movie_id: parseInt(mediaId),
         title: movieTitle,
         poster_path: posterPath,
         media_type: mediaType,
@@ -347,7 +339,7 @@ async function saveMovieToPlaylist(playlistId) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${currentToken}`
             },
             body: JSON.stringify(payload)
         });
@@ -358,7 +350,6 @@ async function saveMovieToPlaylist(playlistId) {
             alert("Added successfully!");
             saveModal.classList.add('hidden');
         } else {
-            
             alert(result.detail || "Could not add to playlist."); 
         }
     } catch (error) {
@@ -374,21 +365,14 @@ const whyWatchBtn = document.getElementById('why-watch-btn');
 if (whyWatchBtn) {
     whyWatchBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        // 1. Grab the movie/show title from the page
         const title = document.getElementById('page-title').innerText;
-        
-        // 2. Find the chat widget elements
         const chatPopup = document.getElementById('chat-popup');
         const userInput = document.getElementById('user-input');
         
         if (chatPopup && userInput) {
-            // 3. Open the chat window
             chatPopup.classList.remove('hidden');
-            
-            // 4. Type the message into the chat box
             userInput.value = `Why should I watch ${title}?`;
             
-            // 5. Trigger the existing sendMessage function from your chat.js!
             if (typeof sendMessage === 'function') {
                 sendMessage();
             } else {

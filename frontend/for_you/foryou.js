@@ -2,21 +2,26 @@ const token = localStorage.getItem('moviebuddy_token');
 const recommendationsContainer = document.getElementById('recommendations-container');
 const statusMessage = document.getElementById('status-message');
 
-// Ensure navbar auth button works
+// Ensure navbar auth button works safely with absolute paths
 const authBtn = document.getElementById('nav-auth-btn');
-if (token) {
+if (token && authBtn) {
     authBtn.innerText = "Logout";
     authBtn.href = "#"; 
     authBtn.addEventListener('click', (e) => {
         e.preventDefault(); 
+        // Clear everything out of memory
         localStorage.removeItem('moviebuddy_token');
-        window.location.href = '../login_page/auth.html'; 
+        localStorage.removeItem('moviebuddy_username');
+        // Safely redirect to login
+        window.location.href = '/MovieBuddy/frontend/login_page/auth.html'; 
     });
 }
 
 async function loadRecommendations() {
     if (!token) {
-        recommendationsContainer.innerHTML = "<p class='loading-text'>Please log in to see your personalized recommendations.</p>";
+        if(recommendationsContainer) {
+            recommendationsContainer.innerHTML = "<p class='loading-text' style='grid-column: 1 / -1; text-align: center;'>Please log in to see your personalized recommendations.</p>";
+        }
         return;
     }
 
@@ -30,10 +35,9 @@ async function loadRecommendations() {
 
         const data = await response.json();
 
-        // Handle the case where they haven't liked anything yet
         if (data.status === "empty") {
             recommendationsContainer.innerHTML = `
-                <div style="grid-column: 1 / -1; text-align: center; color: #aaa;">
+                <div style="grid-column: 1 / -1; text-align: center; color: #aaa; margin-top: 40px;">
                     <h3>We need more data! 🕵️‍♂️</h3>
                     <p>Go search for a few movies you love and save them to your <b>"Liked"</b> playlist. Come back here when you're done!</p>
                 </div>
@@ -54,7 +58,7 @@ async function loadRecommendations() {
                 card.style.position = 'relative';
                 card.style.overflow = 'hidden';
                 card.style.borderRadius = '8px';
-                card.style.aspectRatio = '2/3';        // ← key fix: natural poster ratio
+                card.style.aspectRatio = '2/3';        
                 card.style.transition = 'transform 0.2s';
                 card.onmouseover = () => card.style.transform = 'scale(1.05)';
                 card.onmouseout = () => card.style.transform = 'scale(1)';
@@ -68,6 +72,8 @@ async function loadRecommendations() {
                 } else {
                     card.style.background = '#2a2a2a';
                 }
+                
+                // The Netflix-style Match Badge
                 if (movie.match_score) {
                     const badge = document.createElement('div');
                     badge.innerText = `${movie.match_score}% Match`;
@@ -75,15 +81,15 @@ async function loadRecommendations() {
                         position: absolute; 
                         top: 10px; 
                         right: 10px; 
-                        background-color: rgba(0, 0, 0, 0.8); /* Dark semi-transparent pill */
-                        color: #46d369; /* The classic 'High Confidence' Green */
+                        background-color: rgba(0, 0, 0, 0.8); 
+                        color: #46d369; 
                         padding: 5px 10px; 
                         border-radius: 6px; 
                         font-size: 0.85rem; 
                         font-weight: bold;
-                        z-index: 2; /* Keeps it above the image */
+                        z-index: 2; 
                         box-shadow: 0 4px 6px rgba(0,0,0,0.5);
-                        border: 1px solid rgba(70, 211, 105, 0.2); /* Slight green glow border */
+                        border: 1px solid rgba(70, 211, 105, 0.2); 
                     `;
                     card.appendChild(badge);
                 }
@@ -108,7 +114,9 @@ async function loadRecommendations() {
         }
     } catch (error) {
         console.error("Error loading recommendations:", error);
-        recommendationsContainer.innerHTML = "<p class='loading-text'>Something went wrong while fetching your recommendations.</p>";
+        if(recommendationsContainer){
+            recommendationsContainer.innerHTML = "<p class='loading-text' style='grid-column: 1 / -1; text-align: center; color: red;'>Something went wrong while fetching your recommendations.</p>";
+        }
     }
 }
 
