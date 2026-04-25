@@ -16,16 +16,15 @@
 /* A grid specifically for wide, horizontal backdrop images */
 .cinematic-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
 }
 
-/* The Cinematic Card matching your screenshot */
 .cinematic-card {
     position: relative;
     border-radius: 12px;
     overflow: hidden;
-    aspect-ratio: 16 / 9; /* Forces a perfect widescreen rectangle */
+    aspect-ratio: 2 / 3;
     background-color: #1a1a1a;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;

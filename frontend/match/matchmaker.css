@@ -243,12 +243,13 @@ transition: border-color 0.4s;
     gap: 20px;
 }
  
-.movie-card {
-    background: #1e1e1e;
-    border-radius: 8px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+.movies-grid {
+    display: grid;
+    /* This forces exactly 3 equal-width columns */
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 30px; /* Slightly increased the gap so they don't feel squished */
+    max-width: 1000px; /* Keeps the whole grid centered and contained */
+    margin: 0 auto; /* Centers the grid inside the results screen */
 }
  
 .movie-card:hover {

@@ -1,7 +1,26 @@
 // Wrap everything so it waits for the HTML to load!
 document.addEventListener('DOMContentLoaded', () => {
     const TMDB_IMG = "https://image.tmdb.org/t/p/w500";
+    const token = localStorage.getItem('moviebuddy_token');
 
+    // ==========================================
+    // 1. NAVBAR AUTH LOGIC (THE FIX!)
+    // ==========================================
+    const authBtn = document.getElementById('nav-auth-btn');
+    if (token && authBtn) {
+        authBtn.innerText = "Logout";
+        authBtn.href = "#"; 
+        authBtn.addEventListener('click', (e) => {
+            e.preventDefault(); 
+            localStorage.removeItem('moviebuddy_token');
+            localStorage.removeItem('moviebuddy_username');
+            window.location.href = '/MovieBuddy/frontend/login_page/auth.html'; 
+        });
+    }
+
+    // ==========================================
+    // 2. MATCHMAKER UI LOGIC
+    // ==========================================
     function showScreen(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         const screen = document.getElementById(id);
@@ -74,6 +93,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const card = document.createElement('div');
             card.className = 'movie-card';
+            
+            // Fix: Add an empty link wrapper so clicking the card goes to details page
+            const cardLink = document.createElement('a');
+            cardLink.href = `/MovieBuddy/frontend/Movie_details/details.html?type=${movie.media_type || 'movie'}&id=${movie.id}`;
+            cardLink.style.textDecoration = 'none';
+            cardLink.style.color = 'inherit';
  
             const poster = movie.poster_path
               ? `<img src="${TMDB_IMG}${movie.poster_path}" alt="${movie.title}" loading="lazy"/>`
@@ -94,16 +119,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="genre-tags">${genreTags}</div>
               </div>
             `;
- 
-            grid.appendChild(card);
+            
+            cardLink.appendChild(card);
+            grid.appendChild(cardLink);
         });
  
         showScreen('results-screen');
     }
 
+    // ==========================================
+    // 3. WEBSOCKET & ROOM LOGIC
+    // ==========================================
     async function initRoom() {
-        const token = localStorage.getItem('moviebuddy_token');
-
         if (!token) {
             window.location.href = '/MovieBuddy/frontend/login_page/auth.html';
             return;
@@ -115,7 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
             avatarYou.textContent = username[0].toUpperCase();
         }
 
-        // 1. Check if room_id already exists in URL (friend opening shared link)
         const urlParams = new URLSearchParams(window.location.search);
         let roomId = urlParams.get('room');
 
@@ -134,7 +160,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await res.json();
                 roomId = data.room_id;
 
-                // Update the URL so the back button and sharing works correctly
                 window.history.replaceState({}, '', `?room=${roomId}`);
 
             } catch (e) {
@@ -149,7 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         startCountdown();
 
-        // 4. Open WebSocket connection with the real room_id
         const wsUrl = `wss://moviebuddy-whxl.onrender.com/api/room/ws/${roomId}?token=${token}`;
         const ws = new WebSocket(wsUrl);
 
@@ -165,7 +189,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             switch (data.event) {
                 case 'connected':
-                    // If users_in_room is 2, we are the second person (guest)
                     if (data.users_in_room === 2 && avatarThem) {
                         avatarThem.classList.add('connected');
                         avatarThem.textContent = '✓';
@@ -173,7 +196,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     break;
 
                 case 'both_connected':
-                    // Both users are in — update UI and switch to calculating screen
                     if (avatarThem) {
                         avatarThem.classList.add('connected');
                         avatarThem.textContent = '✓';
@@ -188,7 +210,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     break;
 
                 case 'recommendations_ready':
-                    // Wait for calc animation to finish (4 steps × 700ms = 2800ms)
                     setTimeout(() => {
                         renderMovies(data.recommendations);
                     }, 3200);
@@ -206,7 +227,6 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (event.code === 4004) {
                 showError('Room Not Found', 'This room has expired or does not exist.');
             }
-            // code 1000 = normal close, ignore it
         };
 
         ws.onerror = () => {
