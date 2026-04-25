@@ -4,5 +4,3 @@ __pycache__/
 
 backend/test_ai.py
 backend/.env
-
-frontend/home/config.js

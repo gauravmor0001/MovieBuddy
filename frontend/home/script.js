@@ -1,28 +1,55 @@
-let CONFIG={}
-try {
-        const response = await fetch('https://your-render-url-here.onrender.com/api/config');
-        const data = await response.json();
-        CONFIG.API_KEY = data.TMDB_API_KEY;
-        
-    } catch (error) {
-        console.error("Failed to load secure config:", error);
-    }
-
-const API_KEY=CONFIG.API_KEY
+// 1. Declare variables globally so all functions can use them
+let API_KEY = ""; 
 const BASE_URL='https://api.themoviedb.org/3';
 const IMAGE_BASE_URL='https://image.tmdb.org/t/p/w500';
+
+// DOM Elements
+const heroBanner = document.getElementById('hero-banner');
+const heroTitle = document.getElementById('hero-title');
+const heroDesc = document.getElementById('hero-description');
+const heroVideoContainer = document.getElementById('hero-video-container'); 
+const searchInput = document.getElementById('searchinput');
+const searchBtn = document.getElementById('searchbutton');
+const searchSection = document.getElementById('search-section');
+const searchResultsContainer = document.getElementById('search-results');
+const searchHeading = document.getElementById('search-heading');
+const info_button = document.getElementById('info-button');
+
+let infomediatype;
+let infomovieid;
+
+// 2. Wrap your startup execution in this async function!
+async function initializeApp() {
+    try {
+        // Wait safely for the key from your Render backend
+        API_KEY = await getTMDBKey();
+        
+        // NOW that we have the key, load the homepage content
+        fetchHeroBanner();
+        fetchAndDisplayMovies('/trending/all/week', 'trending-slider');
+        fetchAndDisplayMovies('/movie/now_playing', 'cinemas-slider');
+        fetchAndDisplayMovies('/tv/popular', 'Popular-slider');
+        fetchAndDisplayMovies('/movie/top_rated', 'top-rated-slider');
+        fetchAndDisplayMovies('/movie/upcoming', 'latest-slider');
+        
+    } catch (error) {
+        console.error("Failed to load TMDB key:", error);
+    }
+}
+
+// Kick off the application
+initializeApp();
+
+// --- ALL YOUR FUNCTIONS AND EVENT LISTENERS GO BELOW ---
 
 async function fetchAndDisplayMovies(endpoint,containerId){
     try{
         const url=`${BASE_URL}${endpoint}?api_key=${API_KEY}`;
-
-        const response=await fetch(url); //raw data
+        const response=await fetch(url);
         const data=await response.json();
-
         const slider=document.getElementById(containerId);
 
         data.results.forEach(movie => {
-
             if (movie.backdrop_path) {
                 const mediaType = movie.media_type || (endpoint.startsWith('/tv') ? 'tv' : 'movie');
                 const link = document.createElement('a');
@@ -38,12 +65,11 @@ async function fetchAndDisplayMovies(endpoint,containerId){
 
                 const info = document.createElement('div');
                 info.classList.add('movie-info');
-                // TMDB uses "title" for movies, but "name" for TV shows!
                 info.innerText = movie.title || movie.name;
 
                 card.appendChild(img);
                 card.appendChild(info);
-                link.appendChild(card);  // this is wraping the whole card into <a> to make it clickable
+                link.appendChild(card); 
                 slider.appendChild(link);
             }
         });
@@ -52,12 +78,6 @@ async function fetchAndDisplayMovies(endpoint,containerId){
     }
 }
 
-const heroBanner=document.getElementById('hero-banner');
-const heroTitle=document.getElementById('hero-title');
-const heroDesc=document.getElementById('hero-description');
-const heroVideoContainer = document.getElementById('hero-video-container'); 
-let infomediatype;
-let infomovieid;
 async function fetchHeroBanner(){
     try{
         const url = `${BASE_URL}/trending/all/week?api_key=${API_KEY}`;
@@ -74,6 +94,7 @@ async function fetchHeroBanner(){
         const mediaType = randomMovie.media_type || 'movie'; 
         infomediatype=mediaType;
         infomovieid=randomMovie.id;
+        
         const videoUrl = `${BASE_URL}/${mediaType}/${randomMovie.id}/videos?api_key=${API_KEY}`;
         const videoResponse = await fetch(videoUrl);
         const videoData = await videoResponse.json();
@@ -96,22 +117,10 @@ async function fetchHeroBanner(){
         console.error('Error fetching hero banner:', error);
     }
 }
-fetchHeroBanner();
-
-fetchAndDisplayMovies('/trending/all/week', 'trending-slider');
-fetchAndDisplayMovies('/movie/now_playing', 'cinemas-slider');
-fetchAndDisplayMovies('/tv/popular', 'Popular-slider');
-fetchAndDisplayMovies('/movie/top_rated', 'top-rated-slider');
-fetchAndDisplayMovies('/movie/upcoming', 'latest-slider');
-
-const searchInput = document.getElementById('search-input');
-const searchBtn = document.getElementById('search-btn');
-
 
 async function searchMedia(query) {
     try{
         const url = `${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`;
-        
         const response = await fetch(url);
         const data = await response.json();
 
@@ -120,32 +129,26 @@ async function searchMedia(query) {
         searchResultsContainer.innerHTML = '';
         
         data.results.forEach(item => {
-            // Multi-search also returns actors. Let's skip people for now.
             if (item.media_type === 'person') return;
 
-            // 2. Handle TMDB's naming quirks (Movies use title, TV uses name)
             const title = item.title || item.name;
             const releaseDate = item.release_date || item.first_air_date;
-            // Extract just the year (e.g., "2015-04-10" becomes "2015")
             const year = releaseDate ? releaseDate.split('-')[0] : 'Unknown';
 
             const link = document.createElement('a');
             link.href = `/MovieBuddy/frontend/Movie_details/details.html?type=${encodeURIComponent(item.media_type)}&id=${encodeURIComponent(item.id)}`;
-            link.style.textDecoration = 'none'; // Prevent links from turning text blue
+            link.style.textDecoration = 'none';
 
             const card = document.createElement('div');
             card.classList.add('search-card');
 
-            // 3. The Visual Logic: Poster vs. Text Fallback
             if (item.poster_path || item.backdrop_path) {
-                // If they have an image, show the image
                 const imagePath = item.backdrop_path ? item.backdrop_path : item.poster_path;
                 const img = document.createElement('img');
                 img.src = `${IMAGE_BASE_URL}${imagePath}`;
                 img.alt = title;
                 card.appendChild(img);
             } else {
-                // If NO image, create the dark box with text like your screenshot
                 const infoDiv = document.createElement('div');
                 infoDiv.classList.add('search-card-fallback');
                 infoDiv.innerHTML = `
@@ -164,70 +167,41 @@ async function searchMedia(query) {
     }
 }
 
-searchbutton.addEventListener('click', () => {
-    const searchTerm = searchinput.value;
+// Event Listeners
+searchBtn.addEventListener('click', () => {
+    const searchTerm = searchInput.value;
     if (searchTerm) {
         searchMedia(searchTerm);
-        searchinput.value="";
+        searchInput.value="";
     }
 });
 
-searchinput.addEventListener('keypress', (event) => {
+searchInput.addEventListener('keypress', (event) => {
     if (event.key === 'Enter') {
-        const searchTerm = searchinput.value;
+        const searchTerm = searchInput.value;
         if (searchTerm) {
             searchMedia(searchTerm);
-            searchinput.value="";
+            searchInput.value="";
         }
     }
 });
 
-const searchSection = document.getElementById('search-section');
-const searchResultsContainer = document.getElementById('search-results');
-const searchHeading = document.getElementById('search-heading');
-
-
-const token = localStorage.getItem('moviebuddy_token');
-
-    const authBtn = document.getElementById('nav-auth-btn');
-    
-    if (token) {
-        authBtn.innerText = "Logout";
-        // 2. Stop it from going to auth.html
-        authBtn.href = "#"; 
-        
-
-        authBtn.addEventListener('click', (e) => {
-            e.preventDefault(); // Stop the link from jumping the page
-            
-            // Delete the VIP wristbands from memory
-            localStorage.removeItem('moviebuddy_token');
-            localStorage.removeItem('moviebuddy_username');
-            
-            // Kick them back to the home page (or login page)
-            window.location.href = '/MovieBuddy/frontend/login_page/auth.html'; 
-        });
-    }
-
-const info_button=document.getElementById('info-button');
 info_button.addEventListener('click', () => {
     window.location.href=`/MovieBuddy/frontend/Movie_details/details.html?type=${encodeURIComponent(infomediatype)}&id=${encodeURIComponent(infomovieid)}`;
 });
 
-
-
+// Authentication Status
+const token = localStorage.getItem('moviebuddy_token');
+const authBtn = document.getElementById('nav-auth-btn');
     
-// what we get in json from api call:
-// {
-//   "page": 1,
-//   "results": [
-//     {
-//       "title": "Inception",
-//       "backdrop_path": "/xyz.jpg"
-//     },
-//     {
-//       "title": "Interstellar",
-//       "backdrop_path": "/abc.jpg"
-//     }
-//   ]
-// }
+if (token) {
+    authBtn.innerText = "Logout";
+    authBtn.href = "#"; 
+    
+    authBtn.addEventListener('click', (e) => {
+        e.preventDefault(); 
+        localStorage.removeItem('moviebuddy_token');
+        localStorage.removeItem('moviebuddy_username');
+        window.location.href = '/MovieBuddy/frontend/login_page/auth.html'; 
+    });
+}
